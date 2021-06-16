@@ -157,17 +157,32 @@ function addTask() {
             );
         })
         .then(tasks => {
+            displaySuccessToast("Added Successfully");
 
             const tasksContainer = document.querySelector('.todo-available-tasks');
             const addedTask = tasks.data[tasks.data.length-1];
             const taskContainer = makeTask(addedTask);
             tasksContainer.appendChild(taskContainer);
 
+            const updateButton = document.getElementById(`update-task-${addedTask.id}`);
+            const editButton = document.getElementById(`edit-task-${addedTask.id}`);
+            const deleteButton = document.getElementById(`delete-task-${addedTask.id}`);
+            updateButton.onclick = () => updateTask(addedTask.id);
+            editButton.onclick = () => editTask(addedTask.id);
+            deleteButton.onclick = () => deleteTask(addedTask.id);
+
         })
         .catch(error => {
             displayErrorToast('Could Not Add Task.');
         })
     }
+}
+
+function updatesAreValid(title) {
+    if (!title) {
+        return false;
+    }
+    return true;
 }
 
 function editTask(id) {
@@ -177,8 +192,6 @@ function editTask(id) {
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
 
-    
-
 }
 
 function deleteTask(id) {
@@ -187,6 +200,25 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+
+    displayInfoToast("Please wait...");
+    const token = localStorage.getItem('token');
+
+    axios({
+        url : API_BASE_URL + `todo/${id}/`,
+        method : 'delete',
+        headers : {
+            'Authorization' : `Token ${token}`
+        }
+    })
+    .then(res => {
+        displaySuccessToast("Removed Successfully");
+        const childEl = document.getElementById(`input-button-${id}`);
+        childEl.parentElement.parentElement.removeChild(childEl.parentElement);
+    })
+    .catch(error => {
+        displayErrorToast('Could Not Delete Task.');
+    })
 }
 
 function updateTask(id) {
@@ -196,6 +228,46 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+
+    displayInfoToast("Please wait...");
+    const newTitle = document.getElementById(`input-button-${id}`).value.trim();
+    const token = localStorage.getItem('token');
+    
+    if (updatesAreValid(newTitle)) {
+
+        axios({
+            url : API_BASE_URL + `todo/${id}/`,
+            method : 'put',
+            headers : {
+                'Authorization' : `Token ${token}`
+            },
+            data : {
+                title : newTitle
+            }
+        })
+        .then(res => {
+            displaySuccessToast("Updated Successfully.");
+
+            const titleContainer = document.getElementById(`task-${id}`);
+            titleContainer.textContent = res.data.title;
+
+            document.getElementById('task-' + id).classList.remove('hideme');
+            document.getElementById('task-actions-' + id).classList.remove('hideme');
+            document.getElementById('input-button-' + id).classList.add('hideme');
+            document.getElementById('done-button-' + id).classList.add('hideme');
+        })
+        .catch(error => {
+            displayErrorToast('Could Not Update Task.');
+        })
+
+    } else {
+        displayErrorToast('Task Title Cannot Be Empty.');
+
+        document.getElementById('task-' + id).classList.remove('hideme');
+        document.getElementById('task-actions-' + id).classList.remove('hideme');
+        document.getElementById('input-button-' + id).classList.add('hideme');
+        document.getElementById('done-button-' + id).classList.add('hideme');
+    }
 }
 
 export {

@@ -13,7 +13,6 @@ function makeTask (task) {
             class="btn btn-outline-secondary todo-update-task" 
             type="button" 
             id="update-task-${task.id}"
-            onclick = "updateTask(task.id)"
         >Done</button>
     </div>
     <div id="task-${task.id}" class="todo-task">
@@ -26,7 +25,6 @@ function makeTask (task) {
             type="button" 
             id="edit-task-${task.id}"
             class="btn btn-outline-warning todo-edit-task"
-            onclick = "editTask(task.id)"
         >
             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
                 width="18px" height="20px">
@@ -35,7 +33,6 @@ function makeTask (task) {
             type="button" 
             class="btn btn-outline-danger todo-delete-task" 
             id="delete-task-${task.id}"
-            onclick = "deleteTask(task.id)"
         >
             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
                 width="18px" height="22px">
@@ -44,6 +41,23 @@ function makeTask (task) {
     `
 
     return taskContainer;
+}
+
+function addEventListeners() {
+    const updateButtons = document.getElementsByClassName('todo-update-task');
+    const editButtons = document.getElementsByClassName('todo-edit-task');
+    const deleteButtons = document.getElementsByClassName('todo-delete-task');
+
+    for (let i=0; i<updateButtons.length; i++) {
+        const updateButton = updateButtons[i];
+        const editButton = editButtons[i];
+        const deleteButton = deleteButtons[i];
+
+        const id = updateButtons[i].id.replace('update-task-','');
+        updateButton.onclick = () => updateTask(id);
+        editButton.onclick = () => editTask(id);
+        deleteButton.onclick = () => deleteTask(id);
+    }
 }
 
 function getTasks() {
@@ -71,20 +85,7 @@ function getTasks() {
             tasksContainer.appendChild(taskContainer);
         })
 
-        const updateButtons = document.getElementsByClassName('todo-update-task');
-        const editButtons = document.getElementsByClassName('todo-edit-task');
-        const deleteButtons = document.getElementsByClassName('todo-delete-task');
-
-        for (let i=0; i<updateButtons.length; i++) {
-            const updateButton = updateButtons[i];
-            const editButton = editButtons[i];
-            const deleteButton = deleteButtons[i];
-
-            const id = updateButtons[i].id.replace('update-task-','');
-            updateButton.onclick = () => updateTask(id);
-            editButton.onclick = () => editTask(id);
-            deleteButton.onclick = () => deleteTask(id);
-        }
+        addEventListeners();
     })
 }
 

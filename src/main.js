@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {makeTask} from './init';
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -69,12 +71,53 @@ function register() {
     }
 }
 
+function loginFieldsAreValid(userName, password) {
+    if (userName === '' || password === '') {
+        displayErrorToast("Please fill all the fields correctly.");
+        return false;
+    }
+    return true;
+}
+
 function login() {
     /***
      * @todo Complete this function.
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+
+    const userName = document.getElementById('inputUsername').value.trim();
+    const password = document.getElementById('inputPassword').value;
+
+    if (loginFieldsAreValid(userName, password)) {
+        displayInfoToast("Please wait...");
+
+        const userData = {
+            username: userName,
+            password: password
+        };
+
+        axios({
+            url : API_BASE_URL + 'auth/login/',
+            method : 'post',
+            data : userData
+        })
+        .then(user => {
+            localStorage.setItem('token', user.data.token);
+            window.location.href = '/';
+        })
+        .catch(error => {
+            displayErrorToast('Please Enter the Correct Credentials.');
+        })
+    }
+}
+
+function taskIsValid(task) {
+    if (task === '') {
+        displayErrorToast("Task Title Cannot Be Empty.");
+        return false;
+    }
+    return true;
 }
 
 function addTask() {
@@ -83,13 +126,59 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
+
+    const task = document.getElementById('add-task-field').value.trim();
+
+    if (taskIsValid(task)) {
+        displayInfoToast("Please wait...");
+        const token = localStorage.getItem('token');
+
+        const taskData = {
+            title : task
+        }
+    
+        axios({
+            method : 'post',
+            data : taskData,
+            url : API_BASE_URL + 'todo/create/',
+            headers : {
+                'Authorization' : 'Token ' + token
+            }
+        })
+        .then(res => {
+            return (
+                axios({
+                    url : API_BASE_URL + 'todo/',
+                    method : 'get',
+                    headers : {
+                        'Authorization' : 'Token ' + token
+                    }
+                })
+            );
+        })
+        .then(tasks => {
+
+            const tasksContainer = document.querySelector('.todo-available-tasks');
+            const addedTask = tasks.data[tasks.data.length-1];
+            const taskContainer = makeTask(addedTask);
+            tasksContainer.appendChild(taskContainer);
+
+        })
+        .catch(error => {
+            displayErrorToast('Could Not Add Task.');
+        })
+    }
 }
 
 function editTask(id) {
+
     document.getElementById('task-' + id).classList.add('hideme');
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
+
+    
+
 }
 
 function deleteTask(id) {
@@ -101,9 +190,21 @@ function deleteTask(id) {
 }
 
 function updateTask(id) {
+
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
 }
+
+export {
+    updateTask,
+    deleteTask,
+    editTask,
+    addTask,
+    login,
+    register,
+    logout
+}
+

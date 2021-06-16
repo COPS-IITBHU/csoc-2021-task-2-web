@@ -113,26 +113,17 @@ function addTask() {
         method: "post",
         data: { title: todoText }
     })
-        .then(function ({ data, status }) {
+        .then(function (response) {
             axios({
                 headers: {
                     Authorization: "Token " + localStorage.getItem("token")
                 },
                 url: API_BASE_URL + "todo/",
                 method: "get"
-            }).then(function (response) {
-                const { data, status } = response;
-                const availableTasks = document.querySelector(".todo-available-tasks");
-                availableTasks.innerHTML = `<span class="badge badge-primary badge-pill todo-available-tasks-text">
-                Available Tasks
-            </span>`;
-                for (let task of data) {
-                    const taskNo = task.id;
-                    const todoText = task.title;
-                    newElement(todoText, taskNo);
-                    // localStorage.setItem("currentTaskNo", taskNo + 1);
-                }
-                // iziToast.destroy();
+            }).then(function ({ data, status }) {
+                const newTodo = data[data.length - 1];
+                const taskNo = newTodo.id;
+                newElement(todoText, taskNo);
             });
         })
         .catch(function (err) {
@@ -164,10 +155,6 @@ function deleteTask(id) {
 }
 
 function updateTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to update the task to the backend server.
-     */
     const todoText = document.getElementById("input-button-" + id).value;
     if (!todoText) {
         return;

@@ -114,12 +114,10 @@ function addTask() {
         data: { title: todoText }
     })
         .then(function ({ data, status }) {
-            console.log(data);
             const taskNo = data.id;
             newElement(todoText, taskNo);
         })
         .catch(function (err) {
-            console.log(err);
             displayErrorToast("An error occurred");
         });
 }
@@ -140,11 +138,9 @@ function deleteTask(id) {
         method: "delete"
     })
         .then(function ({ data, status }) {
-            console.log(data);
             document.querySelector(`#todo-${id}`).remove();
         })
         .catch(function (err) {
-            console.log(err);
             displayErrorToast("An error occurred");
         });
 }
@@ -174,7 +170,6 @@ function updateTask(id) {
             document.getElementById("task-" + id).innerText = todoText;
         })
         .catch(function (err) {
-            console.log(err);
             displayErrorToast("An error occurred");
         });
 }

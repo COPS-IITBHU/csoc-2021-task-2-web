@@ -17,11 +17,9 @@ function getTasks() {
         url: API_BASE_URL + "todo/",
         method: "get"
     }).then(function ({ data, status }) {
-        console.log(data);
         for (let task of data) {
             const taskNo = task.id;
             const todoText = task.title;
-            console.log(taskNo, todoText);
             newElement(todoText, taskNo);
         }
         iziToast.destroy();

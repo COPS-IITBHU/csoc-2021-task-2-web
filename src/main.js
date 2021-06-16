@@ -114,9 +114,26 @@ function addTask() {
         data: { title: todoText }
     })
         .then(function ({ data, status }) {
-            const taskNo = Number.parseInt(localStorage.getItem("currentTaskNo"));
-            localStorage.setItem("currentTaskNo", taskNo + 1);
-            newElement(todoText, taskNo);
+            axios({
+                headers: {
+                    Authorization: "Token " + localStorage.getItem("token")
+                },
+                url: API_BASE_URL + "todo/",
+                method: "get"
+            }).then(function (response) {
+                const { data, status } = response;
+                const availableTasks = document.querySelector(".todo-available-tasks");
+                availableTasks.innerHTML = `<span class="badge badge-primary badge-pill todo-available-tasks-text">
+                Available Tasks
+            </span>`;
+                for (let task of data) {
+                    const taskNo = task.id;
+                    const todoText = task.title;
+                    newElement(todoText, taskNo);
+                    // localStorage.setItem("currentTaskNo", taskNo + 1);
+                }
+                // iziToast.destroy();
+            });
         })
         .catch(function (err) {
             displayErrorToast("An error occurred");

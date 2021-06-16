@@ -16,12 +16,13 @@ function getTasks() {
         },
         url: API_BASE_URL + "todo/",
         method: "get"
-    }).then(function ({ data, status }) {
+    }).then(function (response) {
+        const { data, status } = response;
         for (let task of data) {
             const taskNo = task.id;
             const todoText = task.title;
             newElement(todoText, taskNo);
-            localStorage.setItem("currentTaskNo", taskNo + 1);
+            // localStorage.setItem("currentTaskNo", taskNo + 1);
         }
         iziToast.destroy();
     });

@@ -114,7 +114,8 @@ function addTask() {
         data: { title: todoText }
     })
         .then(function ({ data, status }) {
-            const taskNo = data.id;
+            const taskNo = Number.parseInt(localStorage.getItem("currentTaskNo"));
+            localStorage.setItem("currentTaskNo", taskNo + 1);
             newElement(todoText, taskNo);
         })
         .catch(function (err) {

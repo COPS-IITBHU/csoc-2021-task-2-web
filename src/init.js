@@ -21,6 +21,7 @@ function getTasks() {
             const taskNo = task.id;
             const todoText = task.title;
             newElement(todoText, taskNo);
+            localStorage.setItem("currentTaskNo", taskNo + 1);
         }
         iziToast.destroy();
     });

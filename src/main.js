@@ -3,8 +3,8 @@ import {makeTask} from './init';
 
 function displaySuccessToast(message) {
     iziToast.success({
-        title: 'Success',
-        message: message
+      title: "Success",
+      message: message,
     });
 }
 
@@ -80,12 +80,7 @@ function loginFieldsAreValid(userName, password) {
 }
 
 function login() {
-    /***
-     * @todo Complete this function.
-     * @todo 1. Write code for form validation.
-     * @todo 2. Fetch the auth token from backend and login the user.
-     */
-
+    
     const userName = document.getElementById('inputUsername').value.trim();
     const password = document.getElementById('inputPassword').value;
 
@@ -121,11 +116,6 @@ function taskIsValid(task) {
 }
 
 function addTask() {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to add the task to the backend server.
-     * @todo 2. Add the task in the dom.
-     */
 
     const task = document.getElementById('add-task-field').value.trim();
 
@@ -195,11 +185,6 @@ function editTask(id) {
 }
 
 function deleteTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to delete the task to the backend server.
-     * @todo 2. Remove the task from the dom.
-     */
 
     displayInfoToast("Please wait...");
     const token = localStorage.getItem('token');
@@ -222,12 +207,6 @@ function deleteTask(id) {
 }
 
 function updateTask(id) {
-
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to update the task to the backend server.
-     * @todo 2. Update the task in the dom.
-     */
 
     displayInfoToast("Please wait...");
     const newTitle = document.getElementById(`input-button-${id}`).value.trim();

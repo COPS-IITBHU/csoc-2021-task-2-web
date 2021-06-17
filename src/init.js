@@ -61,9 +61,6 @@ function addEventListeners() {
 }
 
 function getTasks() {
-    /***
-     * @todo Fetch the tasks created by the user and display them in the dom.
-     */
 
     const token = localStorage.getItem('token'); 
 

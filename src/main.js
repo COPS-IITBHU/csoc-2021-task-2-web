@@ -1,4 +1,6 @@
 import axios from 'axios';
+
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -23,8 +25,8 @@ function displayInfoToast(message) {
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
 function logout() {
-    localStorage.removeItem('token');
-    window.location.href = '/login/';
+    localStorage.removeItem("token");
+    window.location.href = "/login/";
 }
 
 function registerFieldsAreValid(firstName, lastName, email, username, password) {
@@ -60,50 +62,187 @@ function register() {
             url: API_BASE_URL + 'auth/register/',
             method: 'post',
             data: dataForApiRequest,
-        }).then(function({data, status}) {
-          localStorage.setItem('token', data.token);
-          window.location.href = '/';
-        }).catch(function(err) {
-          displayErrorToast('An account using same email or username is already created');
+        }).then(function ({ data, status }) {
+            localStorage.setItem("token", data.token);
+            window.location.href = '/';
+        }).catch(function (err) {
+            displayErrorToast('An account using same email or username is already created');
         })
     }
 }
 
 function login() {
-    /***
-     * @todo Complete this function.
-     * @todo 1. Write code for form validation.
-     * @todo 2. Fetch the auth token from backend and login the user.
-     */
+    let userName = document.getElementById("inputUsername").value;
+    let pswd = document.getElementById("inputPassword").value;
+
+    axios({
+        url: API_BASE_URL + "auth/login/",
+        method: "POST",
+        data: {
+            username: userName,
+            password: pswd,
+        },
+    }).then(function({data}) {
+        localStorage.setItem("token", data.token);
+        window.location.href = "/";
+    }).catch(function({data, status, error}) {
+        pswd.value = "";
+        displayErrorToast("Invalid Credentials Provided..");
+    })
+
 }
 
 function addTask() {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to add the task to the backend server.
-     * @todo 2. Add the task in the dom.
-     */
+    let inputText = document.getElementById("added-task");
+    let task = inputText.value;
+    axios({
+        headers: {
+            Authorization: "Token " + localStorage.getItem("token"),
+        },
+        url: API_BASE_URL + "todo/create/",
+        method: "POST",
+        data: {
+            title: task,
+        },
+    }).then(function() {
+
+        inputText.value = ""
+        axios({
+            headers: {
+                Authorization: "Token " + localStorage.getItem("token"),
+            },
+            url: API_BASE_URL + "todo/",
+            method: "GET",
+            dataType: "json",
+        }).then(function ({data}) {
+            newCard(data[data.length - 1])
+        })
+
+    })
+
 }
 
 function editTask(id) {
-    document.getElementById('task-' + id).classList.add('hideme');
-    document.getElementById('task-actions-' + id).classList.add('hideme');
-    document.getElementById('input-button-' + id).classList.remove('hideme');
-    document.getElementById('done-button-' + id).classList.remove('hideme');
+    document.getElementById("task-" + id).classList.add("hideme");
+    document.getElementById("task-actions-" + id).classList.add("hideme");
+    document.getElementById("input-button-" + id).classList.remove("hideme");
+    document.getElementById("done-button-" + id).classList.remove("hideme");
 }
 
 function deleteTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to delete the task to the backend server.
-     * @todo 2. Remove the task from the dom.
-     */
+    axios({
+        headers: {
+            Authorization: "Token " + localStorage.getItem("token"),
+        },
+        url: API_BASE_URL + `todo/${id}/`,
+        method: "DELETE",
+    }).then(function() {
+        document.getElementById("task-" + id).parentElement.remove();
+    })
+
+
 }
 
 function updateTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to update the task to the backend server.
-     * @todo 2. Update the task in the dom.
-     */
+    let updateText = document.getElementById("input-button-" + id);
+    let taskBody = document.getElementById("task-" + id);
+    let taskButton = document.getElementById("task-actions-" + id);
+    let updateButton = document.getElementById("done-button-" + id);
+
+    axios({
+        headers: {
+            Authorization: "Token " + localStorage.getItem("token"),
+        },
+        url: API_BASE_URL + `todo/${id}/`,
+        method: "PUT",
+        data: {
+            title: updateText.value,
+        },
+    }).then(function ({data}) {
+
+        taskBody.textContent = data.title;
+        updateText.value = "";
+        taskBody.classList.remove("hideme");
+        taskButton.classList.remove("hideme");
+        updateText.classList.add("hideme");
+        updateButton.classList.add("hideme");
+    }).catch(function ({error}){
+        displayErrorToast(`${error}`);
+        taskBody.classList.remove("hideme");
+        taskButton.classList.remove("hideme");
+        updateText.classList.add("hideme");
+        updateButton.classList.add("hideme");
+    })
 }
+
+function newCard(data) {
+    
+    const list = document.querySelector('.todo-available-tasks')
+    let sect = document.createElement('li')
+    sect.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+    sect.innerHTML = `<input id="input-button-${data.id}" type="text" class="form-control todo-edit-task-input hideme"
+            placeholder="Edit The Task" />
+          <div id="done-button-${data.id}" class="input-group-append hideme">
+            <button class="btn btn-outline-secondary todo-update-task done-task" type="button" id="up-task-${data.id}">
+              Done
+            </button>
+          </div>
+          <div id="task-${data.id}" class="todo-task">
+            ${data.title}
+          </div>
+          <span id="task-actions-${data.id}">
+            <button style="margin-right: 5px;" type="button" id="task-edit-${data.id}" class="btn btn-outline-warning edit-task">
+              <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png" width="18px"
+                height="20px" >
+            </button>
+            <button type="button" class="btn btn-outline-danger del-task" id="delete-Task-${data.id}">
+              <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg" width="18px"
+                height="22px" >
+            </button>
+          </span>`
+    list.appendChild(sect);
+    const done_task = document.querySelector(`#up-task-${data.id}`);
+    done_task.addEventListener("click", () => {
+            let str = edit_task.id.split("-");
+            console.log(str);
+            let num = str[2];
+            updateTask(parseInt(num));
+
+        })
+    
+    const edit_task = document.querySelector(`#task-edit-${data.id}`);
+
+    edit_task.addEventListener("click", () => {
+            let str = done_task.id.split("-");
+
+            let num = str[2];
+            editTask(parseInt(num));
+        })
+    
+    const del_task = document.querySelector(`#delete-task-${data.id}`);
+
+    del_task.addEventListener("click", () => {
+            let str = del_task.id.split("-");
+
+            let num = str[2];
+            deleteTask(parseInt(num));
+        })
+}
+
+
+const log_out = document.querySelector("#logout-button");
+if (log_out) {
+    log_out.addEventListener("click", () => {
+        console.log("asfd");
+        logout();
+    })
+}
+const add_task = document.getElementById("addTasks");
+if (add_task) add_task.addEventListener("click", addTask);
+const regB = document.getElementById("register");
+if (regB) regB.addEventListener("click", register);
+const log_in = document.getElementById("log-in");
+if (log_in) log_in.addEventListener("click", login);
+
+
+

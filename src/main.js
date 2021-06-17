@@ -24,7 +24,12 @@ const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
 function logout() {
     localStorage.removeItem('token');
-    window.location.href = '/login/';
+    window.location.replace("/");
+}
+
+
+if( document.getElementById('logoutButton')){
+    document.getElementById('logoutButton').onclick = logout;
 }
 
 function registerFieldsAreValid(firstName, lastName, email, username, password) {
@@ -40,6 +45,7 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
 }
 
 function register() {
+
     const firstName = document.getElementById('inputFirstName').value.trim();
     const lastName = document.getElementById('inputLastName').value.trim();
     const email = document.getElementById('inputEmail').value.trim();
@@ -67,23 +73,99 @@ function register() {
           displayErrorToast('An account using same email or username is already created');
         })
     }
+
+    
 }
+
+if( document.getElementById('registerButton')){
+    document.getElementById('registerButton').onclick = register;
+}
+
+
 
 function login() {
-    /***
-     * @todo Complete this function.
-     * @todo 1. Write code for form validation.
-     * @todo 2. Fetch the auth token from backend and login the user.
-     */
+
+    const username = document.getElementById('inputUsername').value.trim();
+    const password = document.getElementById('inputPassword').value;
+
+     
+    displayInfoToast("Please wait...");
+    const dataForApiRequest = {
+        username: username,
+        password: password
+    }
+    axios({
+        url: API_BASE_URL + 'auth/login/',
+        method: 'post',
+        data: dataForApiRequest,
+    }).then(function({data, status}) {
+      localStorage.setItem('token', data.token);
+      window.location.href = '/';
+    }).catch(function(err) {
+      displayErrorToast('Wrong username or password');
+    })
+
+
 }
 
+if( document.getElementById('loginButton')){
+    document.getElementById('loginButton').onclick = login;
+}
+
+
 function addTask() {
+
+    const inputTask = document.getElementById('taskForm').value.trim();
+    const dataForApiRequest = {
+        title: inputTask,
+    }
+    console.log(inputTask)
+    axios({
+        url: API_BASE_URL + 'todo/create/',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        method: 'post',
+        data: dataForApiRequest,
+    }).then(function({data, status}) {
+
+        var elem = document.querySelector('.list-group-item');
+        var clone = elem.cloneNode(true);
+        // clone.id = 'elem2';
+        // clone.classList.add('text-large');
+        elem.before(clone);
+
+        axios({
+            headers: {
+                Authorization: 'Token ' + localStorage.getItem('token'),
+            },
+            url: API_BASE_URL + 'todo/',
+            method: 'get',
+        }).then(function({data, status}) {   
+        const tasks = document.getElementsByClassName('todo-task');
+        tasks[0].innerHTML=inputTask;    
+        })
+
+
+    }).catch(function(err) {
+      displayErrorToast('Erron in adding the task');
+    })
+
+
+
+
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
 }
+
+if( document.getElementById('addTaskButton')){
+    document.getElementById('addTaskButton').onclick = addTask;
+}
+
+
 
 function editTask(id) {
     document.getElementById('task-' + id).classList.add('hideme');

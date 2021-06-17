@@ -20,6 +20,8 @@ function displayInfoToast(message) {
     });
 }
 
+var previousValue, newValue;
+
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 const registerButton = document.querySelector("#registerBtn");
 const loginButton = document.querySelector("#loginBtn");
@@ -120,11 +122,13 @@ function addTask() {
 
 
      const taskEntry = document.querySelector(".todo-add-task input").value.trim();
+     
 
      if (!taskEntry) {
          displayErrorToast("Enter a task to add it")
          return;
      }
+   
      axios({
          headers: {
              Authorization: "Token " + localStorage.getItem("token")
@@ -150,14 +154,19 @@ function addTask() {
              console.log(err)
              displayErrorToast("Error encountered");
          });
+        
+         document.getElementById('EnterTask').value='';
 
 }
 
 function editTask(id) {
+    previousValue=document.getElementById('input-button-' + id).value;
+    console.log(previousValue)
     document.getElementById('task-' + id).classList.add('hideme');
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
+    
 }
 
 function deleteTask(id) {
@@ -188,9 +197,14 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+     newValue= document.getElementById('input-button-' + id).value;
+     console.log(newValue)
+    if(previousValue!=newValue)
+  {  console.log("different value")
      const taskEntry = document.getElementById("input-button-" + id).value;
      if (!taskEntry) {
          return;
+
      }
      axios({
          headers: {
@@ -210,7 +224,14 @@ function updateTask(id) {
          .catch(function (err) {
              console.log(err)
              displayErrorToast("An error occurred");
-         });
+         });}
+         else{
+            document.getElementById("task-" + id).classList.remove("hideme");
+            document.getElementById("task-actions-" + id).classList.remove("hideme");
+            document.getElementById("input-button-" + id).classList.add("hideme");
+            document.getElementById("done-button-" + id).classList.add("hideme");
+
+         }
 
 
 }

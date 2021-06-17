@@ -113,13 +113,27 @@ if( document.getElementById('loginButton')){
 }
 
 
+function getTodoList(){
+    axios({
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'todo/',
+        method: 'get',
+    }).then(function({data, status}) {   
+        return data;
+    })
+}
+
+const initialTasks= getTodoList;
+
 function addTask() {
 
     const inputTask = document.getElementById('taskForm').value.trim();
     const dataForApiRequest = {
         title: inputTask,
     }
-    console.log(inputTask)
+    
     axios({
         url: API_BASE_URL + 'todo/create/',
         headers: {
@@ -128,13 +142,6 @@ function addTask() {
         method: 'post',
         data: dataForApiRequest,
     }).then(function({data, status}) {
-
-        var elem = document.querySelector('.list-group-item');
-        var clone = elem.cloneNode(true);
-        // clone.id = 'elem2';
-        // clone.classList.add('text-large');
-        elem.before(clone);
-
         axios({
             headers: {
                 Authorization: 'Token ' + localStorage.getItem('token'),
@@ -142,16 +149,13 @@ function addTask() {
             url: API_BASE_URL + 'todo/',
             method: 'get',
         }).then(function({data, status}) {   
-        const tasks = document.getElementsByClassName('todo-task');
-        tasks[0].innerHTML=inputTask;    
+            const addedTask=data[data.length - 1]
+            addRow(addedTask);
+            
         })
-
-
     }).catch(function(err) {
       displayErrorToast('Erron in adding the task');
     })
-
-
 
 
     /**
@@ -160,11 +164,51 @@ function addTask() {
      * @todo 2. Add the task in the dom.
      */
 }
+function addRow(task) {
+    const taskID=task.id;
+    const taskTitle=task.title;
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+    li.innerHTML = `
+    <input id="input-button-${taskID}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
+    <div id="done-button-${taskID}" class="input-group-append hideme">
+        <button class="btn btn-outline-secondary todo-update-task" type="button" >Done</button>
+    </div>
+
+    <div id="task-${taskID}" class="todo-task">
+        ${taskTitle}
+    </div>
+
+    <span id="task-actions-${taskID}" >
+        <button style="margin-right:5px;" type="button" id="edit-button-${taskID}" 
+            class="btn btn-outline-warning">
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
+                width="18px" height="20px">
+        </button>
+        <button type="button" class="btn btn-outline-danger delete-btn" id="delete-task-${taskID}" >
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
+                width="18px" height="22px">
+        </button>
+    </span>
+    `;
+  
+    document.getElementById('ul').appendChild(li);
+    document.getElementById('delete-task-'+taskID).addEventListener("click", function(){
+        deleteTask(taskID);   
+    })
+    document.getElementById('done-button-'+taskID).addEventListener("click", function(){
+        updateTask(taskID);   
+    })
+    document.getElementById('edit-button-'+taskID).addEventListener("click", function(){
+        editTask(taskID);   
+    })
+  }
+
+
 
 if( document.getElementById('addTaskButton')){
     document.getElementById('addTaskButton').onclick = addTask;
 }
-
 
 
 function editTask(id) {
@@ -175,6 +219,26 @@ function editTask(id) {
 }
 
 function deleteTask(id) {
+
+    let item = document.getElementById("input-button-"+id);
+    let listItem = item.parentElement;
+    listItem.parentNode.removeChild(listItem);
+    {
+    axios({
+        url: API_BASE_URL + 'todo/'+id+'/',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        method: 'delete',
+    
+    }).then(function({data, status}) {
+
+    }).catch(function(err) {
+      displayErrorToast('Erron in deleting the task');
+    })
+}
+
+
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to delete the task to the backend server.
@@ -182,10 +246,41 @@ function deleteTask(id) {
      */
 }
 
+
+
 function updateTask(id) {
+
+    const updatedTask=document.getElementById('input-button-'+id).value.trim();
+    const dataForApiRequest = {
+        title: updatedTask,
+    }
+    axios({
+        url: API_BASE_URL + 'todo/'+id+'/',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        method: 'patch',
+        data: dataForApiRequest
+
+    }).then(function({data, status}) {
+        document.getElementById('task-'+ id).innerHTML=updatedTask;
+    }).catch(function(err) {
+      displayErrorToast('Erron in deleting the task');
+    })
+
+
+    document.getElementById('task-' + id).classList.remove('hideme');
+    document.getElementById('task-actions-' + id).classList.remove('hideme');
+    document.getElementById('input-button-' + id).classList.add('hideme');
+    document.getElementById('done-button-' + id).classList.add('hideme');
+
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
 }
+
+export function addROW(task){
+    addRow(task);
+};

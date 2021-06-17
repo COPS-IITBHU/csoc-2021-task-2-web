@@ -1,23 +1,7 @@
 import axios from 'axios';
+import {addROW} from './main.js';
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
-function getTasks(data) {
-
-    for(let n=0;n<data.length;n++) {
-        console.log(data[n].title);
-        const tasks = document.getElementsByClassName('todo-task');
-        console.log(tasks[n]);
-        tasks[n].innerHTML=data[n].title;
-    }
-
-    // data.forEach(Task => {
-        
-    // });
-
-    /***
-     * @todo Fetch the tasks created by the user and display them in the dom.
-     */
-}
 
 
 axios({
@@ -32,23 +16,19 @@ axios({
 })
 
 
-function logTasks(){
+
 axios({
-    headers: {
-        Authorization: 'Token ' + localStorage.getItem('token'),
-    },
-    url: API_BASE_URL + 'todo/',
-    method: 'get',
-}).then(function({data, status}) {
-  getTasks(data);
-
+  headers: {
+      Authorization: 'Token ' + localStorage.getItem('token'),
+  },
+  url: API_BASE_URL + 'todo/',
+  method: 'get',
+}).then(function({data, status}) { 
+  if(data.length>0){
     
+    data.forEach(function(task){
+      addROW(task);
+    })
+  }  
+  
 })
-}
-
-logTasks();
-
-// if( document.getElementById('addTaskButton')){
-//     document.getElementById('addTaskButton').onclick = logTasks;
-// }
-

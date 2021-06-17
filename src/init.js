@@ -23,7 +23,7 @@ function getTasks() {
             const taskNo = task.id;
             const taskEntry = task.title;
             newEntry(taskEntry, taskNo);
-            // localStorage.setItem("currentTaskNo", taskNo + 1);
+            
         }
         iziToast.destroy();
     });

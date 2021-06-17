@@ -82,10 +82,10 @@ function login() {
             username: userName,
             password: pswd,
         },
-    }).then(function({data}) {
+    }).then(function ({ data }) {
         localStorage.setItem("token", data.token);
         window.location.href = "/";
-    }).catch(function({data, status, error}) {
+    }).catch(function () {
         pswd.value = "";
         displayErrorToast("Invalid Credentials Provided..");
     })
@@ -104,7 +104,7 @@ function addTask() {
         data: {
             title: task,
         },
-    }).then(function() {
+    }).then(function () {
 
         inputText.value = ""
         axios({
@@ -114,7 +114,7 @@ function addTask() {
             url: API_BASE_URL + "todo/",
             method: "GET",
             dataType: "json",
-        }).then(function ({data}) {
+        }).then(function ({ data }) {
             newCard(data[data.length - 1])
         })
 
@@ -136,7 +136,7 @@ function deleteTask(id) {
         },
         url: API_BASE_URL + `todo/${id}/`,
         method: "DELETE",
-    }).then(function() {
+    }).then(function () {
         document.getElementById("task-" + id).parentElement.remove();
     })
 
@@ -158,7 +158,7 @@ function updateTask(id) {
         data: {
             title: updateText.value,
         },
-    }).then(function ({data}) {
+    }).then(function ({ data }) {
 
         taskBody.textContent = data.title;
         updateText.value = "";
@@ -166,7 +166,7 @@ function updateTask(id) {
         taskButton.classList.remove("hideme");
         updateText.classList.add("hideme");
         updateButton.classList.add("hideme");
-    }).catch(function ({error}){
+    }).catch(function ({ error }) {
         displayErrorToast(`${error}`);
         taskBody.classList.remove("hideme");
         taskButton.classList.remove("hideme");
@@ -176,7 +176,7 @@ function updateTask(id) {
 }
 
 function newCard(data) {
-    
+
     const list = document.querySelector('.todo-available-tasks')
     let sect = document.createElement('li')
     sect.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
@@ -203,30 +203,30 @@ function newCard(data) {
     list.appendChild(sect);
     const done_task = document.querySelector(`#up-task-${data.id}`);
     done_task.addEventListener("click", () => {
-            let str = edit_task.id.split("-");
-            console.log(str);
-            let num = str[2];
-            updateTask(parseInt(num));
+        let str = edit_task.id.split("-");
+        console.log(str);
+        let num = str[2];
+        updateTask(parseInt(num));
 
-        })
-    
+    })
+
     const edit_task = document.querySelector(`#task-edit-${data.id}`);
 
     edit_task.addEventListener("click", () => {
-            let str = done_task.id.split("-");
+        let str = done_task.id.split("-");
 
-            let num = str[2];
-            editTask(parseInt(num));
-        })
-    
+        let num = str[2];
+        editTask(parseInt(num));
+    })
+
     const del_task = document.querySelector(`#delete-task-${data.id}`);
 
     del_task.addEventListener("click", () => {
-            let str = del_task.id.split("-");
+        let str = del_task.id.split("-");
 
-            let num = str[2];
-            deleteTask(parseInt(num));
-        })
+        let num = str[2];
+        deleteTask(parseInt(num));
+    })
 }
 
 

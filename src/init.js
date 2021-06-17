@@ -8,12 +8,12 @@ function getTasks() {
     },
     url: API_BASE_URL + "todo/",
     method: "GET",
-  }).then (function ({data, status, xhr}) {
-      data.forEach((element) => {
-        newCard(element)
-      });
-    })
-  
+  }).then(function ({ data }) {
+    data.forEach((card) => {
+      getCard(card)
+    });
+  })
+
 }
 
 axios({
@@ -28,7 +28,7 @@ axios({
   getTasks();
 })
 
-function newCard(data) {
+function getCard(data) {
   let sect = document.createElement('li')
   sect.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
   const list = document.querySelector('.todo-available-tasks')
@@ -56,31 +56,31 @@ function newCard(data) {
         </span>`
   list.appendChild(sect)
   const done_task = document.querySelector(`#up-task-${data.id}`);
-    done_task.addEventListener("click", () => {
-            let str = edit_task.id.split("-");
-         
-            let num = str[2];
-            updateTask(parseInt(num));
+  done_task.addEventListener("click", () => {
+    let str = edit_task.id.split("-");
 
-        })
-    
-    const edit_task = document.querySelector(`#task-edit-${data.id}`);
+    let num = str[2];
+    updateTask(parseInt(num));
 
-    edit_task.addEventListener("click", () => {
-            let str = done_task.id.split("-");
+  })
 
-            let num = str[2];
-            editTask(parseInt(num));
-        })
-    
-    const del_task = document.querySelector(`#delete-task-${data.id}`);
+  const edit_task = document.querySelector(`#task-edit-${data.id}`);
 
-    del_task.addEventListener("click", () => {
-            let str = del_task.id.split("-");
+  edit_task.addEventListener("click", () => {
+    let str = done_task.id.split("-");
 
-            let num = str[2];
-            deleteTask(parseInt(num));
-        })
+    let num = str[2];
+    editTask(parseInt(num));
+  })
+
+  const del_task = document.querySelector(`#delete-task-${data.id}`);
+
+  del_task.addEventListener("click", () => {
+    let str = del_task.id.split("-");
+
+    let num = str[2];
+    deleteTask(parseInt(num));
+  })
 }
 
 function editTask(id) {
@@ -105,7 +105,7 @@ function updateTask(id) {
     data: {
       title: updateText.value,
     },
-  }).then(function ({data}){
+  }).then(function ({ data }) {
 
     taskBody.textContent = data.title;
     updateText.value = "";
@@ -113,7 +113,7 @@ function updateTask(id) {
     taskButton.classList.remove("hideme");
     updateText.classList.add("hideme");
     updateButton.classList.add("hideme");
-  }).catch(function({error}) {
+  }).catch(function ({ error }) {
     displayErrorToast(`${error}`);
     taskBody.classList.remove("hideme");
     taskButton.classList.remove("hideme");
@@ -130,9 +130,9 @@ function deleteTask(id) {
     },
     url: API_BASE_URL + `todo/${id}/`,
     method: "DELETE",
-  }).then( function () {
-      document.getElementById("task-" + id).parentElement.remove();
-    })
+  }).then(function () {
+    document.getElementById("task-" + id).parentElement.remove();
+  })
 }
 function displayErrorToast(message) {
   iziToast.error({

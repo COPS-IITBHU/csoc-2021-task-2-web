@@ -238,7 +238,6 @@ function deleteTask(id) {
     })
 }
 
-
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to delete the task to the backend server.
@@ -265,7 +264,7 @@ function updateTask(id) {
     }).then(function({data, status}) {
         document.getElementById('task-'+ id).innerHTML=updatedTask;
     }).catch(function(err) {
-      displayErrorToast('Erron in deleting the task');
+      displayErrorToast('Erron in updating the task');
     })
 
 

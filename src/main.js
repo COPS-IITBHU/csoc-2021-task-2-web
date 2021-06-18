@@ -237,7 +237,7 @@ function updateTask(id) {
         },
         url: API_BASE_URL + "todo/" + id + "/",
         method: "patch",
-        data: { title: todoText }
+        data: { title: Text }
     })
         .then(function ({ data, status }) {
             document.getElementById("task-" + id).classList.remove("hideme");

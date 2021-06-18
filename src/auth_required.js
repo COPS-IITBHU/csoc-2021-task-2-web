@@ -4,7 +4,7 @@
 
  // import axios from 'axios';
 
- const axios = require("axios");
+ // const axios = require("axios");
 
  axios.get("/").then((response) => {
      window.location.href = '/register/';

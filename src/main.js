@@ -256,4 +256,4 @@ function updateTask(id) {
 
 
 
-export { editTask, updateTask, deleteTask, newList };
+export { newList };

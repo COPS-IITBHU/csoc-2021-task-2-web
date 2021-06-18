@@ -1,7 +1,7 @@
 import axios from 'axios';
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
-function getTasks() {
+function getTasks() {     // 25 points (4)
     /***
      * @todo Fetch the tasks created by the user and display them in the dom.
      */

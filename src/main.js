@@ -1,4 +1,11 @@
 import axios from 'axios';
+
+// const axios = require("axios");
+//
+// axios.get("/").then((response) => {
+//     window.location.href = '/register/';
+// })
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -69,7 +76,7 @@ function register() {
     }
 }
 
-function login() {
+function login() {     // 15 points (1)
     /***
      * @todo Complete this function.
      * @todo 1. Write code for form validation.
@@ -77,7 +84,7 @@ function login() {
      */
 }
 
-function addTask() {
+function addTask() {    // 25 points (3)
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to add the task to the backend server.
@@ -85,14 +92,14 @@ function addTask() {
      */
 }
 
-function editTask(id) {
+function editTask(id) {     // 35 points (5)
     document.getElementById('task-' + id).classList.add('hideme');
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
 }
 
-function deleteTask(id) {
+function deleteTask(id) {   // 35 points (6)
     /**
      * @todo Complete this function.
      * @todo 1. Send the request to delete the task to the backend server.

@@ -115,7 +115,8 @@ function addTask() {
             method: "GET",
             dataType: "json",
         }).then(function ({ data }) {
-            newCard(data[data.length - 1])
+            newCard(data[data.length - 1]);
+            displaySuccessToast("Task Added")
         })
 
     }).catch(function({error}){
@@ -140,6 +141,7 @@ function deleteTask(id) {
         method: "DELETE",
     }).then(function () {
         document.getElementById("task-" + id).parentElement.remove();
+        displaySuccessToast("Task Deleted");
     })
 
 
@@ -247,4 +249,4 @@ const log_in = document.getElementById("log-in");
 if (log_in) log_in.addEventListener("click", login);
 
 
-
+export  {newCard as getCard};

@@ -118,6 +118,8 @@ function addTask() {
             newCard(data[data.length - 1])
         })
 
+    }).catch(function({error}){
+        displayErrorToast(`${error} entry`);
     })
 
 }
@@ -167,7 +169,7 @@ function updateTask(id) {
         updateText.classList.add("hideme");
         updateButton.classList.add("hideme");
     }).catch(function ({ error }) {
-        displayErrorToast(`${error}`);
+        displayErrorToast(`${error} entry`);
         taskBody.classList.remove("hideme");
         taskButton.classList.remove("hideme");
         updateText.classList.add("hideme");
@@ -204,7 +206,7 @@ function newCard(data) {
     const done_task = document.querySelector(`#up-task-${data.id}`);
     done_task.addEventListener("click", () => {
         let str = edit_task.id.split("-");
-        console.log(str);
+       
         let num = str[2];
         updateTask(parseInt(num));
 

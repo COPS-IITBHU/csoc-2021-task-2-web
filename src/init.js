@@ -1,10 +1,57 @@
 import axios from 'axios';
+import {
+    putTask,
+    deleteTask,
+    editTask,
+} from '../src/main.js'
+
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
 function getTasks() {     // 25 points (4)
-    /***
-     * @todo Fetch the tasks created by the user and display them in the dom.
-     */
+    // /***
+    //  * @todo Fetch the tasks created by the user and display them in the dom.
+    //  */
+    axios({
+        url: API_BASE_URL + 'todo/',
+        method: 'get',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+        }
+    }).then(todos => {
+        todos.data.forEach(todo => {
+            putTask(todo);
+        })
+    }).catch(error => {
+        console.log("There was an error while fetching tasks!")
+        console.log(error);
+    })
+
+    addEventListeners();
+}
+
+function addEventListeners(){
+    const editButtons = $(".edit-btn");
+    const deleteButtons = document.getElementsByClassName(".delete-btn");
+
+    // editButtons.each((id) => {
+    //     editTask(id);
+    // })
+
+    // deleteButtons.forEach((b, id) => {
+    //     $("#delete-task-" + id).click(() => {
+    //         deleteTask(id);
+    //     })
+    // })
+//     for (let i=0; i<deleteButtons.length; i++) {
+//        // const updateButton = updateButtons[i];
+//        const editButton = editButtons[i];
+//        const deleteButton = deleteButtons[i];
+   
+//        const id = deleteButtons[i].id.replace('delete-task-','');
+//        // updateButton.onclick = () => updateTask(id);
+//        editButton.onclick = () => editTask(id);
+//        deleteButton.onclick = () => deleteTask(id);
+//    }
 }
 
 axios({

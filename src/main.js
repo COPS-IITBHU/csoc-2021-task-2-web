@@ -1,13 +1,5 @@
 import axios from 'axios';
 
-// $("#registerbtn").click(() => {
-//     window.location.href = '/login/';
-// })
-
-// $("#loginbtn").click(() => {
-//     window.location.href = '/';
-// })
-
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -79,7 +71,6 @@ function register() {
 }
 
 function login() {
-
     const userName = document.getElementById('inputUsername').value.trim();
     const password = document.getElementById('inputPassword').value;
 
@@ -95,8 +86,7 @@ function login() {
             url : API_BASE_URL + 'auth/login/',
             method : 'post',
             data : userData
-        })
-        .then(user => {
+        }).then(user => {
             localStorage.setItem('token', user.data.token);
             window.location.href = '/';
         }).catch(error => {
@@ -106,14 +96,8 @@ function login() {
     }
 }
 
-function addTask() {    // 25 points (3)
-    // /**
-    //  * @todo Complete this function.
-    //  * @todo 1. Send the request to add the task to the backend server.
-    //  * @todo 2. Add the task in the dom.
-    //  */
+function addTask() {
     const task = document.getElementById("taskInput").value.trim();
-    console.log("addtask clicked!");
 
     if(task !== ''){
         const token = localStorage.getItem('token');
@@ -128,31 +112,55 @@ function addTask() {    // 25 points (3)
                 Authorization: 'Token ' + token
             }
         }).then(response => {
-            putTask(task);
+            displaySuccessToast("Successfully added task!");
+            putTask(task, JSON.parse(response.config.data).title);
             console.log(response);
+            addEventListenerForNewTasks(task);
+            $("#taskInput").val("");
         }).catch(error => {
             console.log(error);
             displayErrorToast("Could not add task!")
         })
-
-
     }
 }
 
-function editTask(id) {     // 35 points (5)
+function addEventListenerForNewTasks(task) {
+    let id;
+    axios({
+        url: API_BASE_URL + 'todo/',
+        method: 'get',
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+        }
+    }).then(todos => {
+        todos.data.forEach(todo => {
+            if (todo.title === task)
+                id = todo.id;
+        })
+    }).catch((error) => {
+        console.log(error);
+    })
+    $("#delete-task-" + id).click(() => {
+        deleteTask(id);
+    })
+    $("#edit-task-" + id).click(() => {
+        editTask(id);
+    })
+}
+
+function editTask(id) {
     document.getElementById('task-' + id).classList.add('hideme');
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
+
+    const updateButton = document.querySelector("#update-task-" + id);
+    updateButton.addEventListener('click', () => {
+        updateTask(id);
+    })
 }
 
-function deleteTask(id) {   // 35 points (6)
-    // /**
-    //  * @todo Complete this function.
-    //  * @todo 1. Send the request to delete the task to the backend server.
-    //  * @todo 2. Remove the task from the dom.
-    //  */
-
+function deleteTask(id) {
     axios({
         url: API_BASE_URL + 'todo/' + id + '/',
         method: 'delete',
@@ -162,55 +170,73 @@ function deleteTask(id) {   // 35 points (6)
         headers: {
             Authorization: 'Token ' + localStorage.getItem('token')
         }
-    }).then(() => {
+    }).then((response) => {
         displayInfoToast("Removed Task!");
-        const item = ".list-item-" + id;
-        item.remove();
+        $("#task-" + id).parent().remove();
+        console.log(response);
     }).catch(error => {
         displayErrorToast("Couldn't remove Task");
         console.log(error);
     })
-
 }
 
 function updateTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to update the task to the backend server.
-     * @todo 2. Update the task in the dom.
-     */
+    const newTitle = $("#input-button-" + id).val();
+
+    if (newTitle !== '') {
+        axios({
+            url: API_BASE_URL + 'todo/' + id + '/',
+            method: 'put',
+            data: {
+                title: newTitle
+            },
+            id: id,
+            headers: {
+                Authorization: 'Token ' + localStorage.getItem('token')
+            }
+        }).then((response) => {
+            displaySuccessToast("Task edited!");
+            showEditedTask(id);
+            $("#task-" + id).text(newTitle);
+            console.log(response);
+        }).catch((error) => {
+            displayErrorToast("Couldn't edit task!");
+            console.log(error);
+        })
+    }
 }
 
-function putTask(task){
-    var taskString = `<li class="list-group-item d-flex justify-content-between align-items-center list-item-${task.id}">
-            <input id="input-button-${task.id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
-            <div id="done-button-${task.id}"  class="input-group-append hideme">
-                <button class="btn btn-outline-secondary todo-update-task" type="button" onclick="updateTask(${task.id})">Done</button>
-            </div>
-            <div id="task-${task.id}" class="todo-task">
-                ${task.title}
-            </div>
+function showEditedTask(id) {
+    $("#input-button-" + id).addClass('hideme');
+    $("#done-button-" + id).addClass('hideme');
+    $("#task-" + id).removeClass('hideme');
+    $("#task-actions-" + id).removeClass('hideme');
+}
 
-            <span id="task-actions-${task.id}">
-                <button style="margin-right:5px;" type="button" id="edit-task-${task.id}" onclick="editTask(${task.id})" class="btn btn-outline-warning edit-btn">
-                    <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
-                        width="18px" height="20px">
-                </button>
-                <button type="button" id="delete-task-${task.id}" class="btn btn-outline-danger delete-btn">
-                    <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
-                        width="18px" height="22px">
-                </button>
-            </span>
-    </li>`
+function putTask(task, title) {
+    let item = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    <input id="input-button-${task.id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task" />
+                    <div id="done-button-${task.id}" class="input-group-append hideme">
+                        <button class="btn btn-outline-secondary todo-update-task done-btn" type="button" id="update-task-${task.id}">
+                            Done
+                        </button>
+                    </div>
+                    <div id="task-${task.id}" class="todo-task">
+                        ${title}
+                    </div>
+                    <span id="task-actions-${task.id}">
+                        <button style="margin-right: 5px;" type="button" id="edit-task-${task.id}" class="btn btn-outline-warning edit-btn">
+                            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png" width="18px"
+                            height="20px" >
+                        </button>
+                        <button type="button" class="btn btn-outline-danger delete-btn" id="delete-task-${task.id}">
+                            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg" width="18px"
+                            height="22px" >
+                        </button>
+                    </span>
+                </li>`
 
-    $("ul").append(taskString);
-
-    const deleteButton = document.querySelector("#delete-task-" + task.id);
-    console.log("#delete-task-" + task.id);
-
-    deleteButton.addEventListener('click', () => {
-        deleteTask(task.id);
-    })
+    $(".todo-available-tasks").append(item);
 }
 
 export {
@@ -221,5 +247,6 @@ export {
     deleteTask,
     updateTask,
     editTask,
-    logout
+    logout,
+    displayErrorToast
 }

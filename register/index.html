@@ -7,12 +7,19 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css"
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/popper.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/popper.min.js"></script> -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
   <meta charset=utf-8>
   <meta http-equiv=X-UA-Compatible content="IE=edge">
   <meta name=viewport content="width=device-width,initial-scale=1">
+  <script type="module" src="../src/no_auth_required.js"></script>
+  <script type="module">
+    import { register } from '../src/main.js';
+    $("#registerbtn").click(() => {
+      register();
+    })
+  </script>
 </head>
 
 <body>
@@ -63,14 +70,8 @@
       <label for="inputAddress2">Password</label>
       <input type="Password" class="form-control" id="inputPassword">
     </div>
-    <button class="btn btn-outline-success my-2 my-sm-0" onclick="register()" type="submit" id="registerbtn">Register</button>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="registerbtn">Register</button>
   </div>
-  <script type="module" src="../src/no_auth_required.js"></script>
-  <script type="module">
-    import {register} from '../src/main.js';
-    const registerButton = document.getElementById('registerbtn');
-    registerButton.onclick = register;
-  </script>
 </body>
 
 </html>

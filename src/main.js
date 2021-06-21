@@ -75,6 +75,19 @@ function login() {
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+    const username = document.getElementbyId(inputUsername).value;
+    const password = document.getElementbyId(inputPassword).value;
+    axios.post(API_BASE_URL + 'auth/login/',{
+        "username": username,
+        "password": password
+    })
+    .then(function({data, status}) {
+        localStorage.setItem('token', data.token);
+        window.location.href = '/';
+      })
+      .catch(function(err) {
+        displayErrorToast('Login Not Authorised');
+      })
 }
 
 function addTask() {
@@ -83,7 +96,18 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
+    const config = {headers :{
+        Authorization: "Token " + localStorage.getItem("token")
+    }}
+    const newtask = document.getElementbyId('newTask')
+    axios.post(API_BASE_URL + 'todo/create/',{
+        title : newtask;
+    },config)
+    .then(res => showOutput(res))
+    .catch(err => console.error(err));
+
 }
+
 
 function editTask(id) {
     document.getElementById('task-' + id).classList.add('hideme');
@@ -98,6 +122,13 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+     const config = {headers :{
+        Authorization: "Token " + localStorage.getItem("token")
+    }}
+    axios.delete(API_BASE_URL + 'todos/'+ id +'/',config)
+    .then(function ({ data }) {
+        document.querySelector(`#todo-${id}`).remove();)
+    .catch(err => console.error(err));
 }
 
 function updateTask(id) {
@@ -106,4 +137,58 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+     const config = {headers :{
+        Authorization: "Token " + localStorage.getItem("token")
+    }}
+    const updated = document.getElementbyId(taskupdate).value;
+    axios.patch( API_BASE_URL + 'todo/' + id,{
+        title : updateTask,
+    },config)
+    .then(function ({ data, status }) {
+        document.getElementById("task-" + id).innerText = update_text;
+         document.getElementById("task-" + id).classList.remove("hideme");
+         document.getElementById("task-actions-" + id).classList.remove("hideme");
+         document.getElementById("input-button-" + id).classList.add("hideme");
+         document.getElementById("done-button-" + id).classList.add("hideme");
+         displaySuccessToast("Task updated successfully."))
+    .catch(err => console.error(err));
 }
+
+function showOutput(res){
+    const list = document.querySelector(.todo-available-tasks);
+    let elem = document.createElement('li');
+    elem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+    elem.innerHTML = 
+    '<input id="input-button-${res.id}" type="text" class="form-control todo-edit-task-input hideme" id="taskupdate"placeholder="Edit The Task">
+    <div id="done-button-${res.id}"  class="input-group-append hideme">
+        <button class="btn btn-outline-secondary todo-update-task" type="button" id="updateTask(${res.id})">Done</button>
+    </div>
+    <div id="task-${res.id}" class="todo-task">
+        ${res.title}
+    </div>
+
+    <span id="task-actions-${res.id}">
+        <button style="margin-right:5px;" type="button" onclick="editTask(${res.id})"
+            class="btn btn-outline-warning">
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
+                width="18px" height="20px">
+        </button>
+        <button type="button" class="btn btn-outline-danger" id="deleteTask(${res.id})">
+            <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
+                width="18px" height="22px">
+        </button>
+    </span>'
+    list.childAppend(elem);
+}
+
+const new_login = document.getElementbyId('log-in');
+if(new_login) new_login.addEventListener("click",login);
+
+const new_register = document.getElementbyId('register');
+if(new_register) new_register.addEventListener("click",register);
+
+const new_update = document.getElementbyId('updateTask');
+if(new_update) new_update.addEventListener("click",updateTask);
+
+const new_delete = document.getElementbyId('deleteTask');
+if(new_delete) new_delete.addEventListener("click",deleteTask);

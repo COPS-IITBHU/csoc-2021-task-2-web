@@ -4,7 +4,12 @@ const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 function getTasks() {
     /***
      * @todo Fetch the tasks created by the user and display them in the dom.
-     */
+     */const config = {headers :{
+        Authorization: "Token " + localStorage.getItem("token")
+    }}
+    axios.get(API_BASE_URL + 'todo/',config)
+    .then(res => console.log(res))
+    .catch(err => console.error(err));
 }
 
 axios({

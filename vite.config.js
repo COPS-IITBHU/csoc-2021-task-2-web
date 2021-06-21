@@ -11,3 +11,7 @@ module.exports = {
     }
   }
 }
+
+hmr: { overlay: false }
+
+

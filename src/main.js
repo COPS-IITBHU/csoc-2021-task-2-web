@@ -122,8 +122,8 @@ function login() {
         n++;
         console.log(n);
         console.log(document.getElementById("add").value);
-        if(!document.getElementById("add").value || document.getElementById("add").value===""){
-            displayErrorToast('No Title');
+        if( !document.getElementById("add").value || document.getElementById("add").value===""){
+           // displayErrorToast('No Title');
             return;
         }
         displayInfoToast('please wait');
@@ -219,7 +219,7 @@ export function editTask(id) {
          toBeDel.parentNode.removeChild(toBeDel);
      }).catch(function(err) {
        displayErrorToast("something went wrong");
-       console.log(err);
+       
      })
 }
 
@@ -237,13 +237,13 @@ export function updateTask(id) {
             },
             method: "patch",
             data: {
-                id: i,
+                id: id,
                 title: document.getElementById("input-button-" + id).value.trim(),
             }
 
         }).then(function({data, status}) {
             document.getElementById("task-"+ id).innerHTML =document.getElementById("input-button-" + id).value.trim();
-            document.getElementById("input-button-" + i).value = "";
+            document.getElementById("input-button-" + id).value = "";
             displaySuccessToast("Sucessful");
         }).catch(function(err) {
             displayErrorToast("something went wrong");

@@ -1,6 +1,6 @@
 import axios from 'axios';
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
-import { newList } from "./main"
+import { new_todo_List } from "./main"
 
 function getTasks()
 {
@@ -18,7 +18,7 @@ function getTasks()
          for (let task of data) {
              const taskNo = task.id;
              const todoText = task.title;
-             newList(todoText, taskNo);
+             new_todo_List(todoText, taskNo);
          }
          iziToast.destroy();
      });
@@ -34,4 +34,4 @@ axios({
   document.getElementById('avatar-image').src = 'https://ui-avatars.com/api/?name=' + data.name + '&background=fff&size=33&color=007bff';
   document.getElementById('profile-name').innerHTML = data.name;
   getTasks();
-})
+});

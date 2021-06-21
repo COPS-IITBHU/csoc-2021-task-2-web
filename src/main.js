@@ -1,25 +1,20 @@
 import axios from 'axios';
 
 const registerButton = document.querySelector("#register-button");
-if (registerButton)
-{
-    registerButton.addEventListener('click',register)
-}
 const loginButton = document.querySelector("#login-button");
+const logoutButton= document.querySelector("#logout-button");
+const addButton= document.querySelector("#add-task");
+
+if (registerButton)
+registerButton.addEventListener('click',register)
+
 if (loginButton)
+loginButton.addEventListener('click',login)
+
+if (localStorage.getItem("token"))
 {
-    loginButton.addEventListener('click',login)
-}
-
-
-if (localStorage.getItem("token")) {
-   const logoutButton= document.querySelector("#logout-button");
    logoutButton.addEventListener('click',logout);
-
-   const addButton= document.querySelector("#add-task");
    addButton.addEventListener('click',addTask);
-
-
 }
 
 function displaySuccessToast(message) {
@@ -62,14 +57,6 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
     return true;
 }
 
-function loginFieldsAreValid(username, password) {
-    if (username === "" || password === "") {
-        displayErrorToast("Please fill all the fields correctly.");
-        return false;
-    }
-    return true;
-}
-
 function register() {
     const firstName = document.getElementById('inputFirstName').value.trim();
     const lastName = document.getElementById('inputLastName').value.trim();
@@ -100,6 +87,15 @@ function register() {
     }
 }
 
+function loginFieldsAreValid(username, password)
+{
+    if (username === "" || password === "") {
+        displayErrorToast("Fill all the required details");
+        return false;
+    }
+    return true;
+}
+
 function login() {
     /***
      * @todo Complete this function.
@@ -109,8 +105,6 @@ function login() {
      const username = document.getElementById("inputUsername").value.trim();
 const password = document.getElementById("inputPassword").value;
 if (loginFieldsAreValid(username, password)) {
-    displayInfoToast("Please wait...");
-
     const dataForApiRequest = {
 
         username: username,
@@ -128,7 +122,7 @@ if (loginFieldsAreValid(username, password)) {
             window.location.href = "/";
         })
         .catch( (err) =>{
-            displayErrorToast("Either username or password is incorrect.");
+            displayErrorToast("Invalid details, Try again!!!");
         });
 }
 }
@@ -139,9 +133,9 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
-     const  textmain = document.querySelector(".todo-add-task input").value.trim();
+     const  todoText = document.querySelector(".todo-add-task input").value.trim();
 
-        if (!textmain) {
+        if (!todoText) {
             return;
         }
         axios({
@@ -150,7 +144,7 @@ function addTask() {
             },
             url: API_BASE_URL + "todo/create/",
             method: "post",
-            data: { title: textmain }
+            data: { title: todoText }
         })
             .then(function (response) {
                 axios({
@@ -162,50 +156,45 @@ function addTask() {
                 }).then(function ({ data, status }) {
 
                     const taskNo = data[data.length - 1].id;
-                    newList(textmain, taskNo);
+                    new_todo_List(todoText, taskNo);
                 });
             })
             .catch(function (err) {
-                displayErrorToast("An error occurred");
+                displayErrorToast("Try Again!!!");
             });
     }
 
-    function newList(Text, listNo) {
+    function new_todo_List(Text, number) {
         const availableTasks = document.querySelector(".todo-available-tasks");
-        const newTaskNode = document.createElement("li");
-        newTaskNode.innerHTML = `
-            <input id="input-button-${listNo}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
-            <div id="done-button-${listNo}" class="input-group-append hideme">
-                <button class="btn btn-outline-secondary todo-update-task" type="button" id="update-task-${listNo}">Done</button>
+        const newTask = document.createElement("li");
+        newTask.id = `todo-${number}`;
+        newTask.classList.add("list-group-item","d-flex","justify-content-between","align-items-center");
+        newTask.innerHTML = `
+            <input id="input-button-${number}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
+            <div id="done-button-${number}" class="input-group-append hideme">
+                <button class="btn btn-outline-secondary todo-update-task" type="button" id="update-task-${number}">Done</button>
             </div>
 
-            <div id="task-${listNo}" class="todo-task">
+            <div id="task-${number}" class="todo-task">
                 ${Text}
             </div>
-            <span id="task-actions-${listNo}">
-                <button style="margin-right:5px;" type="button" id="edit-task-${listNo}"
+            <span id="task-actions-${number}">
+                <button style="margin-right:5px;" type="button" id="edit-task-${number}"
                     class="btn btn-outline-warning">
                     <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
                         width="18px" height="20px">
                 </button>
-                <button type="button" class="btn btn-outline-danger" id="delete-task-${listNo}">
+                <button type="button" class="btn btn-outline-danger" id="delete-task-${number}">
                     <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
                         width="18px" height="22px">
                 </button>
             </span>`;
-        newTaskNode.id = `todo-${listNo}`;
-        newTaskNode.classList.add(
-            "list-group-item",
-            "d-flex",
-            "justify-content-between",
-            "align-items-center"
-        );
-        availableTasks.appendChild(newTaskNode);
-
-        document.querySelector(`#edit-task-${listNo}`).addEventListener("click", () => editTask(listNo));
-        document.querySelector(`#update-task-${listNo}`).addEventListener("click", () => updateTask(listNo));
-        document.querySelector(`#delete-task-${listNo}`).addEventListener("click", () => deleteTask(listNo));
-        document.getElementById("input-button-" + listNo).value = Text;
+        availableTasks.appendChild(newTask);
+        document.getElementById("input-button-" + number).value = Text;
+        document.querySelector(".todo-add-task input").value="";
+        document.querySelector(`#edit-task-${number}`).addEventListener("click",editTask(number));
+        document.querySelector(`#update-task-${number}`).addEventListener("click",updateTask(number));
+        document.querySelector(`#delete-task-${number}`).addEventListener("click",deleteTask(number));
     }
 
 
@@ -234,7 +223,7 @@ function deleteTask(id) {
              document.querySelector(`#todo-${id}`).remove();
          })
          .catch(function (err) {
-             displayErrorToast("An error occurred");
+             displayErrorToast("Try Again!!!");
          });
 }
 
@@ -264,9 +253,9 @@ function updateTask(id) {
              document.getElementById("task-" + id).innerText = Text;
          })
          .catch(function (err) {
-             displayErrorToast("An error occurred");
+             displayErrorToast("Try Again!!!");
          });
 }
 
 
-export { newList }
+export { new_todo_List }

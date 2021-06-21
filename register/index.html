@@ -14,7 +14,12 @@
   <meta http-equiv=X-UA-Compatible content="IE=edge">
   <meta name=viewport content="width=device-width,initial-scale=1">
   <script type="module" src="../src/no_auth_required.js"></script>
-  <script type="module" src="../src/main.js"></script>
+  <script type="module">
+    import { register } from '../src/main.js';
+    $("#registerbtn").click(() => {
+      register();
+    })
+  </script>
 </head>
 
 <body>
@@ -65,7 +70,7 @@
       <label for="inputAddress2">Password</label>
       <input type="Password" class="form-control" id="inputPassword">
     </div>
-    <button class="btn btn-outline-success my-2 my-sm-0" onclick="register()" type="submit">Register</button>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="registerbtn">Register</button>
   </div>
 </body>
 

@@ -1,5 +1,4 @@
- const token = localStorage.getItem('token');
- console.log(token);
- if(token){
-    window.location.href = '/';
- }
+const token = localStorage.getItem("token");
+if (token) {
+    window.location.href = "/";
+}

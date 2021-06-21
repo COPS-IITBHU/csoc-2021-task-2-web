@@ -8,7 +8,6 @@ const auth ={
     },
 };
 var list = document.getElementById('tasks');
-var numtask = 0;
 
 // INTIALIZING SOME BUTTONS.
 const registbtn=document.querySelector('#registbtn');
@@ -19,10 +18,6 @@ const logoutbtn=document.querySelector('#logoutbtn');
 if(logoutbtn) logoutbtn.onclick= logout;
 const addtaskbtn=document.querySelector('#addtaskbtn');
 if(addtaskbtn) addtaskbtn.onclick= addTask;
-
-if (localStorage.getItem('token')!=undefined) {
-    getTask();
-} 
 
 function displaySuccessToast(message) {
     iziToast.success({
@@ -122,39 +117,27 @@ function login() {
     })
 }
 
-// GET TASK FUNCTION.
-function getTask() {
-    displayInfoToast("Loading all the To-Do(s)....  ");
-    axios
-    .get(API_BASE_URL + "todo/",auth)
-    .then(function (response) {
-        const { data } = response;
-        numtask = data.length;
-        for (let entry of data) {
-            const taskno = entry.id;
-            const desc = entry.title;
-            add2list(desc, taskno);   
-        }
-    }).catch(function (err) {
-        displayErrorToast('Some error has occured.');
-    });
-}
-
 // ADD TASK FUNCTION.
 function addTask() {
     const desc = document.querySelector(".todo-add-task input").value.trim();
+    document.querySelector(".todo-add-task input").value = "";
     if (!desc) {
-        displayErrorToast("The task field is empty!")
+        displayErrorToast("The task field is empty!");
         return;
     }
     axios
         .post(API_BASE_URL + "todo/create/",{ title: desc },auth)    
         .then(function (response) {
-            displaySuccessToast("Task added!");
-            numtask += 1;
-            add2list(desc, numtask);
+            axios
+            .get(API_BASE_URL + "todo/",auth)
+            .then(function ({ data, status }) {
+                const newentry = data[data.length - 1];
+                add2list(newentry);
+                displaySuccessToast("Task added!");
+            });
         })
         .catch(function (err) {
+            console.log(err);
             displayErrorToast("Some error has occured.");
         });
 }
@@ -202,7 +185,9 @@ function updateTask(id) {
 }
 
 // FUNCTION TO ADD ENTRIES INTO THE LIST OF TO-DO(s).
-function add2list(desc, taskid) {
+function add2list(newnode) {
+    const desc = newnode.title;
+    const taskid = newnode.id;
     document.getElementById("notask").classList.add('hideme');
     const entry = document.createElement('li');
     entry.innerHTML =
@@ -234,3 +219,5 @@ function add2list(desc, taskid) {
     document.querySelector(`#editbtn${taskid}`).addEventListener("click", () => editTask(taskid));
     document.querySelector(`#updtbtn${taskid}`).addEventListener("click", () => updateTask(taskid));
 }
+
+export { add2list }; 

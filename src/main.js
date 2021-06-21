@@ -225,7 +225,7 @@ function newElement(todoText, taskNo) {
 
 const registerButton = document.querySelector("#register_btn");
 if (registerButton) registerButton.onclick = register;
-const loginButton = document.querySelector("#login_button");
+const loginButton = document.querySelector("#login_btn");
 if (loginButton) loginButton.onclick = login;
 
 if (localStorage.getItem("token")) {

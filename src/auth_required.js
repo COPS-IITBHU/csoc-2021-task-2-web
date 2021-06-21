@@ -1,6 +1,4 @@
-
- const token = localStorage.getItem('token');
- console.log(token);
- if(token==null){
-    window.location.href = '/login';
- }
+const token = localStorage.getItem("token");
+if (token==null) {
+    window.location.href = "/login/";
+}

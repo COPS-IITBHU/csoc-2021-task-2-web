@@ -236,7 +236,7 @@ function newEntry(taskEntry, taskNo) {
     document.querySelector(`#edit-task-${taskNo}`).addEventListener("click", () => editTask(taskNo));
     document.querySelector(`#update-task-${taskNo}`).addEventListener("click", () => updateTask(taskNo));
     document.querySelector(`#delete-task-${taskNo}`).addEventListener("click", () => deleteTask(taskNo));
-    document.getElementById("input-button-" + taskNo).value = todoTxt;
+    document.getElementById("input-button-" + taskNo).value = taskEntry;
 }
 
 const registerButton = document.querySelector("#register-btn");

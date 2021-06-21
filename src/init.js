@@ -8,7 +8,7 @@ function getTasks() {
      */
      iziToast.info({
         title: "Info",
-        message: "Loading all Todos..."
+        message: "Loading all your tasks"
     });
     axios({
         headers: {

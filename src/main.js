@@ -152,7 +152,7 @@ function deleteTask(id) {
 
     axios({
         headers:{
-            Authorization: "Token" + localStorage.getItem("token");
+            Authorization: "Token" + localStorage.getItem("token")
         },
 
         url: API_BASE_URL + "todo/" + "/",

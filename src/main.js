@@ -174,4 +174,28 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+    const updated_task = document.getElementById("input-button-" + id).value;
+    if(updated_task ===null){
+        return
+    }
+    axios({
+        headers: {
+            Authorization: "Token " + localStorage.getItem("token")
+        },
+        url: API_BASE_URL + "todo/" + id + "/",
+        method: "patch",
+        data: { title: updated_task }
+    })
+     
+     .then(function({data, status}){
+        document.getElementById("task-" + id).innerText = updated_task;
+        document.getElementById("task-" + id).classList.remove("hideme");
+        document.getElementById("task-actions-" + id).classList.remove("hideme");
+        document.getElementById("input-button-" + id).classList.add("hideme");
+        document.getElementById("done-button-" + id).classList.add("hideme");
+        displaySuccessToast("Task was successfully updated");
+     })
+     .catch(function(err){
+        displayErrorToast("Error! task could not be updated");
+     });
 }

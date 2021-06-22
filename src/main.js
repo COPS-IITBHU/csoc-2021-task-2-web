@@ -90,12 +90,42 @@ function register() {
     }
 }
 
+function check_user_pass(username,password){
+    if(username === "" || password === ""){
+        displayErrorToast("Invalid entry !!");
+        return false;
+    }
+    return true;
+}
+
 function login() {
     /***
      * @todo Complete this function.
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+
+    const username = document.getElementById("inputUsername").value.trim();
+    const password = document.getElementById("inputPassword").value;
+
+    if(check_user_pass(username,password)){
+        axios({
+            url: API_BASE_URL + 'auth/login/',
+            method: 'post',
+            data: {
+                username,
+                password
+            }
+        })
+         .then(function({data, status})){
+             localStorage.setItem('token',data.token);
+             window.location.href = '/';
+         }
+         .catch(function(err)){
+             displayErrorToast('Error ! Please enter valid input');
+         }
+
+    }
 }
 
 function addTask() {

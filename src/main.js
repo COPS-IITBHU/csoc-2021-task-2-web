@@ -117,13 +117,13 @@ function login() {
                 password
             }
         })
-         .then(function({data, status})){
+         .then(function({data, status}){
              localStorage.setItem('token',data.token);
              window.location.href = '/';
-         }
-         .catch(function(err)){
+         })
+         .catch(function(err){
              displayErrorToast('Error ! Please enter valid input');
-         }
+         })
 
     }
 }
@@ -149,6 +149,23 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+
+    axios({
+        headers:{
+            Authorization: "Token" + localStorage.getItem("token");
+        },
+
+        url: API_BASE_URL + "todo/" + "/",
+        method: "delete"
+    })
+     .then(function({data}){
+         document.querySelector('#todo-${id}').remove();
+         displaySuccessToast("Task was successfully deleted !");
+     })
+     .catch(function(err){
+         console.log(err);
+         displayErrorToast("Error ! task could not be deleted");
+     });
 }
 
 function updateTask(id) {

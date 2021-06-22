@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <meta charset=utf-8>
     <meta http-equiv=X-UA-Compatible content="IE=edge">
     <meta name=viewport content="width=device-width,initial-scale=1">
@@ -46,7 +47,7 @@
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img src="#" class="rounded-circle" id="avatar-image"><span class="todo-profile-name" id="profile-name">Loading ...</span></a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
+                            <a class="dropdown-item" href="#" id="logout">Logout</a>
                         </div>
                     </li>
                 </ul>
@@ -55,18 +56,18 @@
     </nav>
     <center>
         <div class="input-group mb-3 todo-add-task">
-            <input type="text" class="form-control" placeholder="Enter Task">
+            <input type="text" class="form-control" placeholder="Enter Task" id="input-task">
             <div class="input-group-append">
-                <button type="button" class="btn btn-outline-success" onclick="addTask()">Add Task</button>
+                <button type="button" class="btn btn-outline-success" id="add-task">Add Task</button>
             </div>
         </div>
-        <ul class="list-group todo-available-tasks">
+        <ul class="list-group todo-available-tasks" id="tasks">
             <span class="badge badge-primary badge-pill todo-available-tasks-text">
                 Available Tasks
             </span>
 
 
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+            <li class="list-group-item d-flex justify-content-between align-items-center" id="sample-task">
                     <input id="input-button-1" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
                     <div id="done-button-1"  class="input-group-append hideme">
                         <button class="btn btn-outline-secondary todo-update-task" type="button" onclick="updateTask(1)">Done</button>
@@ -81,7 +82,7 @@
                             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
                                 width="18px" height="20px">
                         </button>
-                        <button type="button" class="btn btn-outline-danger" onclick="deleteTask(1)">
+                        <button type="button" class="btn btn-outline-danger dlt-task">
                             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
                                 width="18px" height="22px">
                         </button>
@@ -104,7 +105,7 @@
                             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
                                 width="18px" height="20px">
                         </button>
-                        <button type="button" class="btn btn-outline-danger" onclick="deleteTask(2)">
+                        <button type="button" class="btn btn-outline-danger dlt-task">
                             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
                                 width="18px" height="22px">
                         </button>
@@ -115,6 +116,7 @@
         </ul>
     </center>
     <script type="module" src="./src/init.js"></script>
+    
 </body>
 
 </html>

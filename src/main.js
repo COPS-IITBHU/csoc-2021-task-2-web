@@ -22,6 +22,27 @@ function displayInfoToast(message) {
 
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
+
+const logout_button = document.querySelector('#logout_button');
+if(logout_button){
+    logout_button.onclick = logout;
+}
+
+const login_button = document.querySelector('#login_button');
+if(login_button){
+    login_button.onclick = login;
+}
+
+const register_button = document.querySelector('#register_button');
+if(register_button){
+    register_button.onclick = register;
+}
+
+const add_task_button = document.querySelector('#add_task_button');
+if(add_task_button){
+    add_task_button.onclick = addTask;
+}
+
 function logout() {
     localStorage.removeItem('token');
     window.location.href = '/login/';
@@ -69,12 +90,42 @@ function register() {
     }
 }
 
+function check_user_pass(username,password){
+    if(username === "" || password === ""){
+        displayErrorToast("Invalid entry !!");
+        return false;
+    }
+    return true;
+}
+
 function login() {
     /***
      * @todo Complete this function.
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+
+    const username = document.getElementById("inputUsername").value.trim();
+    const password = document.getElementById("inputPassword").value;
+
+    if(check_user_pass(username,password)){
+        axios({
+            url: API_BASE_URL + 'auth/login/',
+            method: 'post',
+            data: {
+                username,
+                password
+            }
+        })
+         .then(function({data, status}){
+             localStorage.setItem('token',data.token);
+             window.location.href = '/';
+         })
+         .catch(function(err){
+             displayErrorToast('Error ! Please enter valid input');
+         })
+
+    }
 }
 
 function addTask() {
@@ -98,6 +149,23 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+
+    axios({
+        headers:{
+            Authorization: "Token" + localStorage.getItem("token")
+        },
+
+        url: API_BASE_URL + "todo/" + "/",
+        method: "delete"
+    })
+     .then(function({data}){
+         document.querySelector('#todo-${id}').remove();
+         displaySuccessToast("Task was successfully deleted !");
+     })
+     .catch(function(err){
+         console.log(err);
+         displayErrorToast("Error ! task could not be deleted");
+     });
 }
 
 function updateTask(id) {
@@ -106,4 +174,28 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+    const updated_task = document.getElementById("input-button-" + id).value;
+    if(updated_task ===null){
+        return
+    }
+    axios({
+        headers: {
+            Authorization: "Token " + localStorage.getItem("token")
+        },
+        url: API_BASE_URL + "todo/" + id + "/",
+        method: "patch",
+        data: { title: updated_task }
+    })
+     
+     .then(function({data, status}){
+        document.getElementById("task-" + id).innerText = updated_task;
+        document.getElementById("task-" + id).classList.remove("hideme");
+        document.getElementById("task-actions-" + id).classList.remove("hideme");
+        document.getElementById("input-button-" + id).classList.add("hideme");
+        document.getElementById("done-button-" + id).classList.add("hideme");
+        displaySuccessToast("Task was successfully updated");
+     })
+     .catch(function(err){
+        displayErrorToast("Error! task could not be updated");
+     });
 }

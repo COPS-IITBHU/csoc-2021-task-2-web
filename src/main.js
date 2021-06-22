@@ -22,6 +22,27 @@ function displayInfoToast(message) {
 
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
+
+const logout_button = document.querySelector('#logout_button');
+if(logout_button){
+    logout_button.onclick = logout;
+}
+
+const login_button = document.querySelector('#login_button');
+if(login_button){
+    login_button.onclick = login;
+}
+
+const register_button = document.querySelector('#register_button');
+if(register_button){
+    register_button.onclick = register;
+}
+
+const add_task_button = document.querySelector('#add_task_button');
+if(add_task_button){
+    add_task_button.onclick = addTask;
+}
+
 function logout() {
     localStorage.removeItem('token');
     window.location.href = '/login/';

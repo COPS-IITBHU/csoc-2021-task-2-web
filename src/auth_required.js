@@ -7,6 +7,4 @@ if(!(localStorage.getItem('token')))
     window.location.href='login/';
 
 }
-=======
- */
->>>>>>> parent of bb27c56... fix : redirect requires trailing slash
+

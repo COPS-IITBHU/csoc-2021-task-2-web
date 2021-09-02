@@ -1,4 +1,29 @@
 import axios from 'axios';
+
+
+function getHtml(title,index){
+	var html = "";
+	html += 
+	`<li id = "task-items-${index}" class="list-group-item d-flex justify-content-between align-items-center">` + 
+	`<input id="input-button-${index}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">` + 
+	`<div id="done-button-${index}"  class="input-group-append hideme">` + 
+	`<button class="btn btn-outline-secondary todo-update-task" type="button" onclick="updateTask(${index})">Done</button>` + 
+	'</div>' + 
+	`<div id="task-${index}" class="todo-task">` +
+		title + 
+	`</div>` + 
+	`<span id="task-actions-${index}">` + 
+		`<button style="margin-right:5px;" type="button" onclick="editTask(${index})" class="btn btn-outline-warning">` + 
+			'<img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png" width="18px" height="20px">' + 
+		'</button>' + 
+		`<button type="button" class="btn btn-outline-danger" onclick="deleteTask(${index})">` + 
+			'<img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg" width="18px" height="22px">' + 
+		'</button>' + 
+	'</span>' + 
+	'</li>';
+	return html;
+}
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -21,6 +46,19 @@ function displayInfoToast(message) {
 }
 
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
+
+function getUserName(){
+    axios({
+        headers: {
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'auth/profile/',
+        method: 'get',
+    }).then(function({data, status}) {
+        return data.username;
+    })
+}
+
 
 function logout() {
     localStorage.removeItem('token');
@@ -75,7 +113,30 @@ function login() {
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+     const username = document.getElementById('inputUsername').value.trim();
+     const password = document.getElementById('inputPassword').value;
+     if(username == '' || password == ''){
+        displayErrorToast('Please fill all the fields Correctly');
+     }else{
+        const dataForLogin = {
+            username: username,
+            password: password
+        }
+        axios({
+            url: API_BASE_URL + 'auth/login/',
+            method: 'post',
+            data: dataForLogin,
+        }).then(function({data,status}){
+            localStorage.setItem('token',data.token);
+            window.location.href = '/';
+        }).catch(function(err){
+            displayErrorToast('Wrong Login Details');
+        })
+     }
+    
 }
+
+
 
 function addTask() {
     /**
@@ -83,6 +144,44 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
+
+    var title = document.getElementById('task-string').value;
+    if(title == ''){
+        displayErrorToast('Title should be Non empty');
+        return;
+    }
+    const dataForApi = {
+         title: title,
+    }
+  
+    axios({
+        headers:{
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'todo/create/',
+        method: 'post',
+        data: dataForApi,
+    }).then(function({data,status}){
+
+        document.getElementById('task-string').value = '';
+        axios({
+            headers:{
+                Authorization: 'Token ' + localStorage.getItem('token'),
+            },
+            url: API_BASE_URL + 'todo/',
+            method: 'get',
+        }).then(function({data,status}){
+              var length = data.length;  
+              var id = data[length - 1].id;
+              var ul = $('#list');
+              ul.append(getHtml(title,id));  
+        })
+        displaySuccessToast('Task Added Succesfully');
+
+    }).catch(function(err) {
+        alert('Something Unexpected Happen');
+    })  
+   
 }
 
 function editTask(id) {
@@ -98,6 +197,22 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+    
+    axios({
+        headers:{
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'todo/' + `${id}/`,
+        method: 'delete',
+    }).then(function({data,status}){
+        var task = document.getElementById(`task-items-${id}`);
+        task.parentNode.removeChild(task);
+        displaySuccessToast('Task Deleted Succesfully');
+
+    }).catch(function(err){
+        displayErrorToast('Something Unexpected Happened');
+    })
+    
 }
 
 function updateTask(id) {
@@ -106,4 +221,44 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+     var title = document.getElementById(`input-button-${id}`).value;
+     if(title == ''){
+         displayErrorToast('Title should not be empty');
+         return;
+     }
+     const dataForApi = {
+         title: title,
+     }
+     axios({
+        headers:{
+            Authorization: 'Token ' + localStorage.getItem('token'),
+        },
+        url: API_BASE_URL + 'todo/' + `${id}/`,
+        method: 'put',
+        data:dataForApi,
+    }).then(function({data,status}){
+        document.getElementById('input-button-' + id).classList.add('hideme');
+        document.getElementById('done-button-' + id).classList.add('hideme');
+
+        document.getElementById('task-' + id).innerHTML =title;
+        
+        document.getElementById('task-' + id).classList.remove('hideme');
+        document.getElementById('task-actions-' + id).classList.remove('hideme');  
+
+        displaySuccessToast('Task Edited Succesfully');
+
+    }).catch(function(err){
+        displayErrorToast('Something Unexpected Happened');
+    })
+    
+     
 }
+
+window.register = register;
+window.login = login;
+window.addTask = addTask;
+window.editTask = editTask;
+window.deleteTask = deleteTask;
+window.updateTask = updateTask;
+window.logout = logout;
+

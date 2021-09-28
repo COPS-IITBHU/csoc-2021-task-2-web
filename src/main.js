@@ -22,9 +22,14 @@ function displayInfoToast(message) {
 
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
+var el = document.getElementById('logout_btn');
+if(el){
+  el.addEventListener('click', logout, false);
+}
 function logout() {
     localStorage.removeItem('token');
     window.location.href = '/login/';
+    console.log('logout success');
 }
 
 function registerFieldsAreValid(firstName, lastName, email, username, password) {
@@ -39,6 +44,10 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
     return true;
 }
 
+var el = document.getElementById('register_btn');
+if(el){
+  el.addEventListener('click', register, false);
+}
 function register() {
     const firstName = document.getElementById('inputFirstName').value.trim();
     const lastName = document.getElementById('inputLastName').value.trim();
@@ -69,12 +78,12 @@ function register() {
     }
 }
 
+var el = document.getElementById('login_btn');
+if(el){
+  el.addEventListener('click', login, false);
+}
 function login() {
-    /***
-     * @todo Complete this function.
-     * @todo 1. Write code for form validation.
-     * @todo 2. Fetch the auth token from backend and login the user.
-     */
+    displayErrorToast('LOGIN');
 }
 
 function addTask() {

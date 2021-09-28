@@ -83,7 +83,24 @@ if(el){
   el.addEventListener('click', login, false);
 }
 function login() {
-    displayErrorToast('LOGIN');
+
+    const username = document.getElementById('inputUsername').value.trim();
+    const password = document.getElementById('inputPassword').value;
+    const dataForApiRequest = {
+        username: username,
+        password: password
+    }
+
+    axios({
+        url: API_BASE_URL + 'auth/login/',
+        method: 'post',
+        data: dataForApiRequest,
+    }).then(function({data, status}) {
+      localStorage.setItem('token', data.token);
+      window.location.href = '/';
+    }).catch(function(err) {
+      displayErrorToast('Cannot Login!');
+    })
 }
 
 function addTask() {

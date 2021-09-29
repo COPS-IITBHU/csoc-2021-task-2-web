@@ -55,12 +55,12 @@
     </nav>
     <center>
         <div class="input-group mb-3 todo-add-task">
-            <input type="text" class="form-control" placeholder="Enter Task">
+            <input type="text" class="form-control" placeholder="Enter Task" id="new_task">
             <div class="input-group-append">
-                <button type="button" class="btn btn-outline-success" onclick="addTask()">Add Task</button>
+                <button type="button" class="btn btn-outline-success"  id="add_task_btn">Add Task</button>
             </div>
         </div>
-        <ul class="list-group todo-available-tasks">
+        <ul class="list-group todo-available-tasks" id="task_list">
             <span class="badge badge-primary badge-pill todo-available-tasks-text">
                 Available Tasks
             </span>
@@ -99,7 +99,7 @@
                         Sample Task 2
                     </div>
                     <span id="task-actions-2">
-                        <button style="margin-right:5px;" type="button" onclick="editTask(2)"
+                        <button style="margin-right:5px;" type="button" id="edit_task_btn" 
                             class="btn btn-outline-warning">
                             <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
                                 width="18px" height="20px">

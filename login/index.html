@@ -1,5 +1,4 @@
 <html lang="en">
-
 <head>
   <title>Login - Todo</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -8,6 +7,7 @@
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/popper.min.js"></script>
+
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
   <meta charset=utf-8>
@@ -16,7 +16,6 @@
   <script type="module" src="../src/no_auth_required.js"></script>
   <script type="module" src="../src/main.js"></script>
 </head>
-
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Todo</a>
@@ -24,8 +23,6 @@
       aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-
     <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
@@ -51,7 +48,8 @@
       <label>Password</label>
       <input type="Password" class="form-control" id="inputPassword">
     </div>
-    <button class="btn btn-outline-success my-2 my-sm-0" onclick="login()" type="submit">Log In</button>
+    
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="login">Log In</button>
   </div>
 </body>
 

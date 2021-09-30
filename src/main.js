@@ -150,6 +150,7 @@ function editTask(id) {
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
     document.getElementById('done-button-' + id).classList.remove('hideme');
+    document.getElementById('input-button-' + id).value = document.getElementById('task-' + id).innerText.trim();
 }
 
 function deleteTask(id) {

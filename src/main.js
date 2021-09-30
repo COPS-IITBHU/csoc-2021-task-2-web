@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -117,49 +118,24 @@ var el = document.getElementById('add_task_btn');
 if(el){
   el.addEventListener('click', addTask, false);
 }
-function addTask() {
-    
-     var new_task = document.getElementById('new_task').value;
-    //  console.log(new_task);
-     var node = document.createElement("div");
+function addTask() {   
+     const new_task = document.getElementById('new_task').value;
     if(new_task){
         const id = listItems.length+1;
-            // console.log(id);
-            document.getElementById("task_list").appendChild(node).innerHTML=`
-                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                       <input id="input-button-${id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
-                       <div id="done-button-${id}" class="input-group-append hideme">
-                           <button class="btn btn-outline-secondary todo-update-task" type="button" onclick="updateTask(2)">Done</button>
-                       </div>
-   
-                       <div id="task-${id}" class="todo-task">
-                        ${new_task}
-                       </div>
-                       <span id="task-actions-${id}">
-                           <button style="margin-right:5px;" type="button" onclick="editTask(2)"
-                               class="btn btn-outline-warning">
-                               <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
-                                   width="18px" height="20px">
-                           </button>
-                           <button type="button" class="btn btn-outline-danger" onclick="deleteTask(2)">
-                               <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
-                                   width="18px" height="22px">
-                           </button>
-                       </span>
-                </li>`;
-
-                axios({
-                    headers: {Authorization: "Token " + localStorage.getItem('token')},
-                    url: API_BASE_URL + 'todo/create/',
-                    method: 'post',
-                    data: {title:new_task},
-                }).then(function({data, status}) {
-                    // console.log("task added")
-                    displaySuccessToast("New Task Added!!")
-
-                }).catch(function(err) {
-                        displayErrorToast('Task cannot be added!');
-                })
+        axios({
+            headers: {Authorization: "Token " + localStorage.getItem('token')},
+            url: API_BASE_URL + 'todo/create/',
+            method: 'post',
+            data: {title:new_task},
+        }).then(function({data, status}) {
+            // console.log("task added")
+            show_task();
+            document.getElementById('new_task').value="";
+            isEmpty();
+            
+        }).catch(function(err) {
+                displayErrorToast('Task cannot be added!');
+        })
 
                
     }else{
@@ -177,30 +153,106 @@ function editTask(id) {
 }
 
 function deleteTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to delete the task to the backend server.
-     * @todo 2. Remove the task from the dom.
-     */
-
+    
+    console.log("deleting task!!");
      axios({
         headers: {Authorization: "Token " + localStorage.getItem('token')},
-        url: API_BASE_URL + 'todo'+id+'/',
+        url: API_BASE_URL + 'todo/'+id+'/',
         method: 'delete',
         
     }).then(function({data, status}) {
-        document.querySelector(`#todo-${id}`).remove();        
-        displaySuccessToast("Task Deleted!!")
-
+        document.getElementById(`list_item_${id}`).remove();
+        displaySuccessToast("Task Deleted!!");
+        isEmpty();
     }).catch(function(err) {
             displayErrorToast('Task cannot be deleted!');
     })
 }
 
+
 function updateTask(id) {
-    /**
-     * @todo Complete this function.
-     * @todo 1. Send the request to update the task to the backend server.
-     * @todo 2. Update the task in the dom.
-     */
+    const title_editted = document.getElementById('input-button-'+id).value.trim();
+    axios({
+        headers: {Authorization: "Token " + localStorage.getItem('token')},
+        url: API_BASE_URL + 'todo/'+id+'/',
+        method: 'put',
+        data:{title:title_editted}
+        
+    }).then(function({data, status}) {
+        document.getElementById('task-' + id).classList.remove('hideme');
+        document.getElementById('task-actions-' + id).classList.remove('hideme');
+        document.getElementById('input-button-' + id).classList.add('hideme');
+        document.getElementById('done-button-' + id).classList.add('hideme');
+        document.getElementById('task-' + id).innerText= title_editted;
+        displaySuccessToast("Task Updated!!")
+
+    }).catch(function(err) {
+            displayErrorToast('Task cannot be Updated!');
+    })
+
+
 }
+
+
+function show_task() {
+    
+    axios({
+       headers: {Authorization: "Token " + localStorage.getItem('token')},
+       url: API_BASE_URL + 'todo/',
+       method: 'get',
+   }).then(function({data, status}) {
+       console.log(data);
+       // console.log(data.length)
+       let i = data.length-1
+           var node = document.createElement("div");
+           document.getElementById("task_list").appendChild(node).innerHTML=`
+           <li class="list-group-item d-flex justify-content-between align-items-center" id="list_item_${data[i].id}">
+           <input id="input-button-${data[i].id}" type="text" class="form-control todo-edit-task-input hideme" placeholder="Edit The Task">
+           <div id="done-button-${data[i].id}" class="input-group-append hideme">
+               <button class="btn btn-outline-secondary todo-update-task" type="button" id="update_task_btn_${data[i].id}">Done</button>
+           </div>
+
+           <div id="task-${data[i].id}" class="todo-task">
+            ${data[i].title}
+           </div>
+           <span id="task-actions-${data[i].id}">
+               <button style="margin-right:5px;" type="button" id="edit_task_btn_${data[i].id}"
+                   class="btn btn-outline-warning">
+                   <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
+                       width="18px" height="20px">
+               </button>
+               <button type="button" class="btn btn-outline-danger" id="delete_task_btn_${data[i].id}">
+                   <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
+                       width="18px" height="22px">
+               </button>
+           </span>
+    </li>`;
+                // document.getElementById("input-button-" + id).value = title;
+                document.querySelector(`#edit_task_btn_${data[i].id}`).addEventListener("click", () => editTask(data[i].id));
+                document.querySelector(`#update_task_btn_${data[i].id}`).addEventListener("click", () => updateTask(data[i].id));
+                document.querySelector(`#delete_task_btn_${data[i].id}`).addEventListener("click", () => deleteTask(data[i].id));
+
+               displaySuccessToast("New Task Added Successfully!!")
+   }).catch(function(err) {
+           console.log("faileed!!!!!!")
+   })
+   
+}
+
+function isEmpty(){
+    axios({
+        headers: {Authorization: "Token " + localStorage.getItem('token')},
+        url: API_BASE_URL + 'todo/',
+        method: 'get',
+    }).then(function({data, status}) {
+        if(!data.length){
+            document.getElementById('status').innerText="No Available Tasks"
+        }else{
+            document.getElementById('status').innerText="Available Tasks"
+        }
+    }).catch(function(err) {
+            console.log("faileed!!!!!!")
+    })
+}
+
+export{editTask , updateTask , deleteTask , isEmpty};

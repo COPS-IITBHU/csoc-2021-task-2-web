@@ -109,34 +109,24 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
-    var New = document.getElementById('enter-task').value.trim();
-    if(New=="") return;
-    axios({
-        headers: {
-            Authorization: 'Token ' + localStorage.getItem('token')
-        },
-        url: API_BASE_URL + 'todo/create/',
-        method: 'post',
-        data: New,
-    })
-    .then(function({data,status}){
-        document.getElementById('enter-task').innerHTML = "";
-        axios({
-            headers:{
-                Authorization: 'Token ' + localStorage.getItem('token')
-            },
-            url: API_BASE_URL + 'todo/',
-            method: 'get',
-        }).then(function({data,status}){
-            var len = data.length;
-            var id = data[len-1].id;
-            var list = $('#list');
-            list.append(addNewField(title,id));
-        })
-    })
-    .catch(function(error){
-        displayErrorToast("Could not add task.");
-    })
+     const newTodo = document.querySelector(".form-control");
+     if (newTodo.value.trim() === "") { return ; }
+     axios({
+         headers: {
+             Authorization: "Token " + localStorage.getItem("token")
+         },
+         url: API_BASE_URL + "todo/create/",
+         method: "post",
+         data: { title: newTodo.value.trim() }
+     })
+     .then(function (response) {
+         addNewField(newTodo);
+         newTodo.value = "";
+ 
+     })
+     .catch(function (err) {
+         displayErrorToast("An error occurred!");
+     });
 }
 
 function editTask(id) 

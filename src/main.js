@@ -40,8 +40,7 @@ function registerFieldsAreValid(firstName, lastName, email, username, password) 
     return true;
 }
 
-function register() 
-{
+function register() {
     const firstName = document.getElementById('inputFirstName').value.trim();
     const lastName = document.getElementById('inputLastName').value.trim();
     const email = document.getElementById('inputEmail').value.trim();
@@ -62,11 +61,12 @@ function register()
             url: API_BASE_URL + 'auth/register/',
             method: 'post',
             data: dataForApiRequest,
-        }).then(function({data, status}) {
-          localStorage.setItem('token', data.token);
-          window.location.href = '/';
-        }).catch(function(err) {
-          displayErrorToast('An account using same email or username is already created');
+        }).then(function ({ data, status }) {
+            localStorage.setItem('token', data.token);
+            window.location.href = '/';
+        }).catch(function (err) {
+            console.log(err);
+            displayErrorToast('An account using same email or username is already created');
         })
     }
 }

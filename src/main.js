@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 function displaySuccessToast(message) {
     iziToast.success({
         title: 'Success',
@@ -60,11 +61,12 @@ function register() {
             url: API_BASE_URL + 'auth/register/',
             method: 'post',
             data: dataForApiRequest,
-        }).then(function({data, status}) {
-          localStorage.setItem('token', data.token);
-          window.location.href = '/';
-        }).catch(function(err) {
-          displayErrorToast('An account using same email or username is already created');
+        }).then(function ({ data, status }) {
+            localStorage.setItem('token', data.token);
+            window.location.href = '/';
+        }).catch(function (err) {
+            console.log(err);
+            displayErrorToast('An account using same email or username is already created');
         })
     }
 }
@@ -75,6 +77,30 @@ function login() {
      * @todo 1. Write code for form validation.
      * @todo 2. Fetch the auth token from backend and login the user.
      */
+    var Username = document.getElementById('inputUsername').value.trim();
+    var Password = document.getElementById('inputPassword').value;
+    if(Username==""||Password=="")
+    {
+        displayErrorToast("Fill all the required fields");
+        return;
+    }
+    const data = {
+        username: Username,
+        password: Password
+    }
+    displayInfoToast("Please Wait...");
+    axios({
+        url: API_BASE_URL + 'auth/login/',
+        method: 'post',
+        data: data
+    })
+    .then(function({data,status}){
+        localStorage.setItem('token',data.token);
+        window.location.href = '/';
+    })
+    .catch(function(err){
+        displayInfoToast("Invalid Login Request");
+    })
 }
 
 function addTask() {
@@ -83,9 +109,28 @@ function addTask() {
      * @todo 1. Send the request to add the task to the backend server.
      * @todo 2. Add the task in the dom.
      */
+     const newTodo = document.querySelector(".form-control");
+     if (newTodo.value.trim() === "") { return ; }
+     axios({
+         headers: {
+             Authorization: "Token " + localStorage.getItem("token")
+         },
+         url: API_BASE_URL + "todo/create/",
+         method: "post",
+         data: { title: newTodo.value.trim() }
+     })
+     .then(function (response) {
+         addNewField(newTodo);
+         newTodo.value = "";
+ 
+     })
+     .catch(function (err) {
+         displayErrorToast("An error occurred!");
+     });
 }
 
-function editTask(id) {
+function editTask(id) 
+{
     document.getElementById('task-' + id).classList.add('hideme');
     document.getElementById('task-actions-' + id).classList.add('hideme');
     document.getElementById('input-button-' + id).classList.remove('hideme');
@@ -98,6 +143,18 @@ function deleteTask(id) {
      * @todo 1. Send the request to delete the task to the backend server.
      * @todo 2. Remove the task from the dom.
      */
+    axios({
+        headers: { Authorization: 'Token ' + localStorage.getItem('token')},
+        url: API_BASE_URL + 'todo/' + id + '/',
+        method: 'delete',
+    })
+    .then(function({data,status}){
+        document.querySelector(`#todo-${id}`).remove();
+        displaySuccessToast("Deleted Succesfully");
+    })
+    .catch(function(err){
+        displayErrorToast(err);
+    })
 }
 
 function updateTask(id) {
@@ -106,4 +163,78 @@ function updateTask(id) {
      * @todo 1. Send the request to update the task to the backend server.
      * @todo 2. Update the task in the dom.
      */
+     const task = document.getElementById("input-button-" + id).value.trim();
+     if (task != "") {
+         axios({
+             headers: { Authorization: "Token " + localStorage.getItem("token") },
+             method: "patch",
+             url: API_BASE_URL + "todo/" + id + "/",
+             data: { title: task }
+         }).then(function ({ data, status }) {
+             document.getElementById("todo-" + id).classList.remove("hideme");
+             document.getElementById("task-actions-" + id).classList.remove("hideme");
+             document.getElementById("input-button-" + id).classList.add("hideme");
+             document.getElementById("done-button-" + id).classList.add("hideme");
+             document.getElementById("todo-" + id).innerText = task;
+         }).catch(function (err) {
+             displayErrorToast("Task not updated");
+         })
+     }
 }
+
+function addNewField(title, id) 
+{
+    const availableTasks = document.querySelector(".todo-available-tasks");
+    const New = document.createElement("newElement");
+
+    New.innerHTML = `
+        <input id="input-button-${id}" type="text" class="form-control todo-edit-task-input hideme"  placeholder="Edit The Task">
+        <div id="done-button-${id}" class="input-group-append hideme">
+            <button class="btn btn-outline-secondary todo-update-task" type="button" id="updateTaskBtn-${id}">Done</button>
+        </div>
+        <div id="task-${id}" class="todo-task">
+            ${title}
+        </div>
+        <span id="task-actions-${id}">
+            <button style="margin-right:5px;" type="button" id="editTaskBtn-${id}"
+                class="btn btn-outline-warning">
+                <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486663/CSOC/edit.png"
+                    width="18px" height="20px">
+            </button>
+            <button type="button" class="btn btn-outline-danger" id="deleteTaskBtn-${id}">
+                <img src="https://res.cloudinary.com/nishantwrp/image/upload/v1587486661/CSOC/delete.svg"
+                    width="18px" height="22px">
+            </button>
+        </span>`;
+    New.id = `todo-${id}`;
+    New.classList.add(
+        "justify-content-between",
+        "align-items-center",
+        "list-group-item",
+        "d-flex",
+    );
+    availableTasks.appendChild(New);
+
+    document.getElementById("input-button-" + id).value = title;
+    document.querySelector(`#editTaskBtn-${id}`).addEventListener("click", () => editTask(id));
+    document.querySelector(`#updateTaskBtn-${id}`).addEventListener("click", () => updateTask(id));
+    document.querySelector(`#deleteTaskBtn-${id}`).addEventListener("click", () => deleteTask(id));
+}
+
+if (document.getElementById('logout-btn')) {
+    document.getElementById('logout-btn').onclick = logout;
+}
+
+if (document.getElementById('register-btn')) {
+    document.getElementById('register-btn').onclick = register;
+}
+
+if (document.getElementById('login-btn')) {
+    document.getElementById('login-btn').onclick = login;
+}
+
+if (document.getElementById('add-task-btn')) {
+    document.getElementById('add-task-btn').onclick = addTask;
+}
+
+export { addNewField };

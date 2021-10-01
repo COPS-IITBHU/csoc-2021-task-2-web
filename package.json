@@ -20,6 +20,7 @@
   "homepage": "https://github.com/COPS-IITBHU/csoc-2021-task-2-web#readme",
   "dependencies": {
     "axios": "^0.21.1",
+    "upgrade": "^1.1.0",
     "vite": "^2.3.7"
   }
 }

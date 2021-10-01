@@ -29,10 +29,10 @@ var el = document.getElementById('logout_btn');
 if(el){
   el.addEventListener('click', logout, false);
 }
-function logout() {
+function logout(){
     localStorage.removeItem('token');
-    window.location.href = '/login/';
     console.log('logout success');
+    window.location.href = '/login/';
 }
 
 function registerFieldsAreValid(firstName, lastName, email, username, password) {
@@ -111,15 +111,16 @@ function login() {
 
 
 // ADDING A NEW TASK
-const ul = document.getElementById('task_list');
-const listItems = ul.getElementsByTagName('li');
 
 var el = document.getElementById('add_task_btn');
 if(el){
   el.addEventListener('click', addTask, false);
 }
 function addTask() {   
-     const new_task = document.getElementById('new_task').value;
+    const ul = document.getElementById('task_list');
+    const listItems = ul.getElementsByTagName('li');
+
+    const new_task = document.getElementById('new_task').value;
     if(new_task){
         const id = listItems.length+1;
         axios({

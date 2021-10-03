@@ -22,6 +22,8 @@ function displayInfoToast(message) {
 
 const API_BASE_URL = 'https://todo-app-csoc.herokuapp.com/';
 
+
+
 function logout() {
     localStorage.removeItem('token');
     window.location.href = '/login/';
@@ -70,6 +72,15 @@ function register() {
 }
 
 function login() {
+    const userid = document.getElementById('inputUsername').value.trim();
+    const pass = document.getElementById('inputPassword').value;
+
+    const ApiReq = {
+        username: userid,
+        password: pass
+
+    }
+
     /***
      * @todo Complete this function.
      * @todo 1. Write code for form validation.

@@ -82,11 +82,11 @@ function login() {
     var password = document.getElementById('inputPassword').value.trim();
 
     if (username == "" || password == "") {
-        displayErrorToast("Please fill all the required fields!");
+        displayErrorToast("Please fill all the required details!");
         return;
     }
 
-    displayInfoToast("Processing..");
+    displayInfoToast("Logging in....");
     const userData = {
         username: username,
         password: password
@@ -102,7 +102,7 @@ function login() {
             window.location.href = '/';
         })
         .catch(function (err) {
-            displayErrorToast("Account with given details not found! Try Again");
+            displayErrorToast("Please register your account");
         })
 }
 
